@@ -4,7 +4,7 @@ import project_Schema from "../../../db/schema/Project_Schema";
 
 export async function listAllProject(req: Request, res: Response) {
   let request = req.body;
-  let user = await User_Schema.findById({ _id: request.owners }).lean().exec();
+  let user = await User_Schema.findById({ _id: request.owner }).lean().exec();
   let ListProject = [];
   if (user) {
     for (let i = 0; i < user.InfoAllProjectJoin.length; i++) {
@@ -29,18 +29,18 @@ export async function createAProject(req: Request, res: Response) {
   let request = req.body;
   let project = new project_Schema({
     name: request.name,
-    owners: request.owners,
-    members: [request.owners],
+    owner: request.owner,
+    members: [request.owner],
   }); 
   await User_Schema.findByIdAndUpdate(
-    { _id: request.owners },
+    { _id: request.owner },
     { $push: { InfoAllProjectJoin: project._id } }
   );
   await project.save(function (err: any) {
     if (err) {
       console.log(err);
     } else {
-      res.send({ success: true });
+      res.send({ isSuccess: true });
     }
   });
 }

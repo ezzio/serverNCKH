@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import routers from "./router";
+import { connection } from "./db/configmongoose";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -13,20 +14,7 @@ app.use(
 );
 
 async function main() {
-  try {
-    await mongoose.connect(
-      process.env.DB_URL || "mongodb://localhost:27017/Horenso_Manager",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
-  } catch (error: any) {
-    console.error(
-      `Error occured while creating a db connection: ${error.message}`
-    );
-    process.exit(0);
-  }
+  connection();
 
   const port = process.env.PORT || 4000;
 

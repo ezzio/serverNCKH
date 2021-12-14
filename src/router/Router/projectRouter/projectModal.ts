@@ -29,7 +29,7 @@ export async function createAProject(req: Request, res: Response) {
   let request = req.body;
   let project = new project_Schema({
     name: request.name,
-    owner: request.owner,
+    owners: request.owner,
     members: [request.owner],
   }); 
   await User_Schema.findByIdAndUpdate(

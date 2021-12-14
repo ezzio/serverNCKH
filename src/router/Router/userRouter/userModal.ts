@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import user_Schema from "../../../db/schema/User_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
 
-let PORT = process.env.PORT || "http://localhost:4000";
+let PORT = "https://servernckh.herokuapp.com" || "http://localhost:4000";
 
 export async function getUserInfo(req: Request, res: Response) {
   let request = req.body;
@@ -50,7 +50,7 @@ export async function uploadAvatar(req: Request, res: Response) {
   const imgUrl = `${PORT}/photo/${req.file.filename}`;
   try {
     await user_Schema.updateOne(
-      { _id: request.owners },
+      { _id: request.owner },
       { $set: { avatar: imgUrl } }
     );
     res.send({ isSuccess: true });

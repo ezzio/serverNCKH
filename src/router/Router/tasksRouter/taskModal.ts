@@ -37,17 +37,29 @@ export async function createTask(req: Request, res: Response) {
     if (err) {
       res.send("loi ");
     } else {
-      let findColumn = await columns_Schema
-        .updateOne(
-          {
-            jobowner: request.jobowner,
-            "column.id_column": 0,
-          },
-          { $push: { "column.$.tasks": modal._id } }
-        )
-        .lean()
-        .exec();
-      if (findColumn) res.send(findColumn);
+      await columns_Schema.updateOne(
+        {
+          jobowner: request.jobowner,
+          "column.id_column": 0,
+        },
+        { $push: { "column.$.tasks": modal._id } }
+      );
+
+      res.send({ isSuccess: true });
     }
+  });
+}
+
+export async function deleteTask(req: Request, res: Response) {
+  let request = req.body;
+  await columns_Schema.updateOne(
+    {
+      jobowner: request.jobowner,
+      "column.id_column": 0,
+    },
+    { $pull: { "column.$.tasks": request.taskId } }
+  );
+  await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
+    res.send({ isSuccess: true });
   });
 }

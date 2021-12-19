@@ -7,11 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "http://localhost:4200"],
-  })
-);
+
+app.use(cors({ origin: true }));
 
 async function main() {
   connection();

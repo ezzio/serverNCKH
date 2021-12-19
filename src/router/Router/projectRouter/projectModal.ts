@@ -24,6 +24,23 @@ export async function listAllProject(req: Request, res: Response) {
     res.send(ListProject);
   }
 }
+export async function addAMemberIntoProject(req: Request, res: Response) {
+  let request = req.body;
+  let userName = await User_Schema.find({ user_name: request.user_name })
+    .lean()
+    .exec();
+  console.log(request.user_name);
+
+  if (userName.length > 0) {
+    await project_Schema.updateOne(
+      { _id: request.projectowner },
+      { $push: { members: userName[0]._id } }
+    );
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false, message: "user not found" });
+  }
+}
 
 export async function createAProject(req: Request, res: Response) {
   let request = req.body;
@@ -31,7 +48,7 @@ export async function createAProject(req: Request, res: Response) {
     name: request.name,
     owners: request.owner,
     members: [request.owner],
-  }); 
+  });
   await User_Schema.findByIdAndUpdate(
     { _id: request.owner },
     { $push: { InfoAllProjectJoin: project._id } }

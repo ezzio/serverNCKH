@@ -35,7 +35,7 @@ export async function createTask(req: Request, res: Response) {
   }
   new task_Schema(infoNewTask).save(async (err, modal) => {
     if (err) {
-      res.send("loi ");
+      res.send({ isSuccess: false });
     } else {
       await columns_Schema.updateOne(
         {

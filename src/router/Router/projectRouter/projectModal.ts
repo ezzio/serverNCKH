@@ -29,14 +29,21 @@ export async function addAMemberIntoProject(req: Request, res: Response) {
   let userName = await User_Schema.find({ user_name: request.user_name })
     .lean()
     .exec();
-  console.log(request.user_name);
-
   if (userName.length > 0) {
-    await project_Schema.updateOne(
-      { _id: request.projectowner },
-      { $push: { members: userName[0]._id } }
-    );
-    res.send({ isSuccess: true });
+    await project_Schema
+      .updateOne(
+        {
+          $and: [{ owners: request.projectowner }, { _id: request.projectId }],
+        },
+        { $push: { members: userName[0]._id } }
+      )
+      .exec((error: any) => {
+        if (!error) {
+          res.send({ isSuccess: true });
+        } else {
+          res.send({ isSuccess: false });
+        }
+      });
   } else {
     res.send({ isSuccess: false, message: "user not found" });
   }

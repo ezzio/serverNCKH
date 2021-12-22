@@ -17,6 +17,6 @@ export async function register(req: Request, res: Response) {
       }
     });
   } else {
-    res.send({ error: "Username is existed" });
+    res.send({ error: "Username is existed", isSuccess: false });
   }
 }

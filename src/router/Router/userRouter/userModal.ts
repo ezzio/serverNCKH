@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import user_Schema from "../../../db/schema/User_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
+import { resolveSrv } from "dns/promises";
 
 let PORT = "https://servernckh.herokuapp.com" || "http://localhost:4000";
 
@@ -36,9 +37,37 @@ export async function getUserInfo(req: Request, res: Response) {
 
 export async function editProfile(req: Request, res: Response) {
   let request = req.body;
-  let userInfo = await user_Schema.find({ _id: request.owners }).find().exec();
-  let infoEdit = {};
+  let userInfo = await user_Schema.find({ _id: request.owner }).find().exec();
   if (userInfo.length > 0) {
+    let infoEdit = {
+      display_name: request.display_name || userInfo[0].display_name,
+      bio: request.bio || userInfo[0].bio,
+      company: request.company || userInfo[0].company,
+      location: request.location || userInfo[0].location,
+      email: request.email || userInfo[0].email,
+    };
+    user_Schema
+      .updateOne(
+        { _id: request.owner },
+        {
+          $set: {
+            display_name: infoEdit.display_name,
+            bio: infoEdit.bio,
+            company: infoEdit.company,
+            location: infoEdit.location,
+            email: infoEdit.email,
+          },
+        }
+      )
+      .exec((error) => {
+        if (error) {
+          res.send({ isSuccess: false });
+        } else {
+          res.send({ isSuccess: true });
+        }
+      });
+  } else {
+    res.send({ isSuccess: false, error: "user not found !" });
   }
 }
 

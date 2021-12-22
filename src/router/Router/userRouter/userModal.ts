@@ -12,9 +12,13 @@ export async function getUserInfo(req: Request, res: Response) {
   let userInfo = await user_Schema.find({ _id: request.owner }).find().exec();
   result.push({
     userInfo: {
-      username: userInfo[0].user_name,
-      displayName: userInfo[0].display_name,
+      user_name: userInfo[0].user_name,
+      display_name: userInfo[0].display_name || "",
       avatar: userInfo[0].avatar,
+      bio: userInfo[0].bio || "",
+      company: userInfo[0].company || "",
+      email: userInfo[0].email || "",
+      location: userInfo[0].location || "",
     },
   });
   let projectOfUser = await project_Schema.find({

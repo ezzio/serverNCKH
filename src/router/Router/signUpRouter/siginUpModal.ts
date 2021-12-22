@@ -7,7 +7,7 @@ export async function register(req: Request, res: Response) {
     .find({ user_name: request.username })
     .lean()
     .exec();
-  if (checkUser.length == 0) {
+  if (checkUser.length > 0) {
     let User = new user_Schema({ ...req.body, gender: "male" });
     await User.save(function (err: any) {
       if (!err) {

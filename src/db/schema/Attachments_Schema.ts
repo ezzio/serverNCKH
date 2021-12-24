@@ -6,7 +6,6 @@ const AttachMent: Schema = new Schema(
     projectowner: { type: Schema.Types.ObjectId, ref: "Project" },
     location: { type: "string" },
     nameType: { type: "string" },
-
     uploaded_at: { type: Date, default: Date.now },
   },
   { collection: "attrachment" }

@@ -2,10 +2,12 @@ import { model, Schema, Document, ObjectId } from "mongoose";
 
 export default interface taskSchemaInterface extends Document {
   title: string;
+  process: string;
   level: string;
-  progress: string;
+  decription: string;
+  is_complete: boolean;
   priority: string;
-  start_time: string;
+  start_time: Date;
   end_time: Date;
   tasker: [
     {

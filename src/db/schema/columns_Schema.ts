@@ -2,7 +2,7 @@ import { model, Schema, Model, Document } from "mongoose";
 import { columnsSchemaInterface } from "../interface/columnsSchemaInterface";
 const columns: Schema = new Schema({
   jobowner: { type: Schema.Types.ObjectId, ref: "jobs" },
-  idTask: { type: String, default: "cong viec 0" },
+  name: { type: String, default: "cong viec 0" },
   column: {
     type: [
       {

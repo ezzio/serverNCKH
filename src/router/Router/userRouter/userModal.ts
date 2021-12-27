@@ -3,24 +3,27 @@ import user_Schema from "../../../db/schema/User_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
 import { resolveSrv } from "dns/promises";
 
-let PORT = "https://servernckh.herokuapp.com" || "http://localhost:4000";
+let PORT = process.env.PORTURL || "http://localhost:4000";
 
 export async function getUserInfo(req: Request, res: Response) {
   let request = req.body;
   let result = [];
   let allProject = [];
   let userInfo = await user_Schema.find({ _id: request.owner }).find().exec();
-  result.push({
-    userInfo: {
-      user_name: userInfo[0].user_name,
-      display_name: userInfo[0].display_name || "",
-      avatar: userInfo[0].avatar,
-      bio: userInfo[0].bio || "",
-      company: userInfo[0].company || "",
-      email: userInfo[0].email || "",
-      location: userInfo[0].location || "",
-    },
-  });
+  if (userInfo.length > 0) {
+    result.push({
+      userInfo: {
+        user_name: userInfo[0].user_name,
+        display_name: userInfo[0].display_name || "",
+        avatar: userInfo[0].avatar,
+        bio: userInfo[0].bio || "",
+        company: userInfo[0].company || "",
+        email: userInfo[0].email || "",
+        location: userInfo[0].location || "",
+      },
+    });
+  }
+
   let projectOfUser = await project_Schema.find({
     owners: request.owner,
   });
@@ -28,12 +31,14 @@ export async function getUserInfo(req: Request, res: Response) {
     let memberInRoom = [];
     for (let eachMember of project.members) {
       let member = await user_Schema.find({ _id: eachMember }).find().exec();
-      memberInRoom.push({
-        username: member[0].user_name,
-        avatar: member[0].avatar,
-      });
+      if (member) {
+        memberInRoom.push({
+          username: member[0].user_name,
+          avatar: member[0].avatar,
+        });
+      }
     }
-    allProject.push({ projectname: project.name, memberInRoom });
+    allProject.push({ title: project.name, members: memberInRoom });
   }
   await result.push({ allProject: allProject });
   res.send(result);
@@ -78,6 +83,7 @@ export async function editProfile(req: Request, res: Response) {
 export async function uploadAvatar(req: Request, res: Response) {
   let request = req.body;
   console.log(req.file);
+  console.log(request);
 
   if (req.file === undefined) return res.send("you must select a file.");
   const imgUrl = `${PORT}/photo/${req.file.filename}`;

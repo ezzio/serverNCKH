@@ -5,6 +5,7 @@ import moment from "moment";
 import project_Schema from "../../../db/schema/Project_Schema";
 import User_Schema from "../../../db/schema/User_Schema";
 import { ObjectId } from "mongoose";
+
 export async function createAJob(req: Request, res: Response) {
   let request = req.body;
   const dateFormat = "YYYY-MM-DD";
@@ -19,7 +20,7 @@ export async function createAJob(req: Request, res: Response) {
       process: request.process || "0%",
       members: [],
     });
-    if (request.members.length > 0) {
+    if (request.members) {
       await request.members.map(async (member: string) => {
         let user_Id = await User_Schema.find({ user_name: member })
           .lean()

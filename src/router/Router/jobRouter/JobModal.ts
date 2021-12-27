@@ -44,7 +44,7 @@ export async function createAJob(req: Request, res: Response) {
   }
 }
 
-export async function ListTasks(req: Request, res: Response) {
+export async function ListJobs(req: Request, res: Response) {
   let request = req.body;
   let memberInProject: any[] = [];
   let ListJobsofUser: any[] = [];
@@ -61,7 +61,7 @@ export async function ListTasks(req: Request, res: Response) {
             infoMembers.push(eachmember);
           });
           ListJobsofUser.push({
-            projectowner: eachJob.projectowner,
+            _id: eachJob._id,
             title: eachJob.title,
             members: infoMembers,
             start_time: eachJob.start_time,
@@ -72,7 +72,7 @@ export async function ListTasks(req: Request, res: Response) {
           });
         } else {
           ListJobsofUser.push({
-            projectowner: eachJob.projectowner,
+            _id: eachJob._id,
             title: eachJob.title,
             members: [],
             start_time: eachJob.start_time,

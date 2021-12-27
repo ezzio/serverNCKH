@@ -23,7 +23,6 @@ export async function getUserInfo(req: Request, res: Response) {
       },
     });
   }
-
   let projectOfUser = await project_Schema.find({
     owners: request.owner,
   });

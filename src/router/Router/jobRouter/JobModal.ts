@@ -58,7 +58,10 @@ export async function ListJobs(req: Request, res: Response) {
         if (eachJob.members.length > 0) {
           eachJob.members.map(async (eachMember: any) => {
             let eachmember = await User_Schema.find({ _id: eachMember }).lean();
-            infoMembers.push(eachmember);
+            infoMembers.push({
+              user_name: eachmember[0].user_name,
+              avatar: eachmember[0].avatar,
+            });
           });
           ListJobsofUser.push({
             _id: eachJob._id,

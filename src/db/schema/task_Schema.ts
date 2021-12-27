@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document } from "mongoose";
+import { model, Schema, Model, Document , ObjectId} from "mongoose";
 import taskSchemaInterface from "../interface/taskSchemaInterface";
 
 const task = new Schema({
@@ -8,8 +8,10 @@ const task = new Schema({
   process: { type: Number, required: true },
   priority: { type: String, required: true },
   start_time: { type: Date, required: true },
+  description:{ type: String },
+  isOverdue: { type: Boolean },
   end_time: { type: Date },
-  tasker: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  taskers: [{ type: Schema.Types.ObjectId, ref: "User" }],
 });
 
 export default model<taskSchemaInterface>("task", task);

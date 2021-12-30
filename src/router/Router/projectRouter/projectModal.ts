@@ -60,11 +60,13 @@ export async function createAProject(req: Request, res: Response) {
     { _id: request.owner },
     { $push: { InfoAllProjectJoin: project._id } }
   );
-  await project.save(function (err: any) {
+  await project.save((err, modal) => {
     if (err) {
       console.log(err);
     } else {
-      res.send({ isSuccess: true });
+      console.log(modal);
+
+      res.send({ isSuccess: true, idProject: modal._id });
     }
   });
 }

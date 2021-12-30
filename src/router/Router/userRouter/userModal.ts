@@ -32,6 +32,7 @@ export async function getUserInfo(req: Request, res: Response) {
       let member = await user_Schema.find({ _id: eachMember }).find().exec();
       if (member) {
         memberInRoom.push({
+          idProject: member[0]._id,
           username: member[0].user_name,
           avatar: member[0].avatar,
         });

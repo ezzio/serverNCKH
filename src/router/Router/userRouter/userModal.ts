@@ -108,7 +108,7 @@ export async function uploadAvatar(req: Request, res: Response) {
 export async function searchSubStringUserName(req: Request, res: Response) {
   let request = req.body;
   let userNameFound = await user_Schema
-    .find({ user_name: { $regex: "t" } })
+    .find({ user_name: { $regex: request.user_name } })
     .exec();
   if (userNameFound.length > 0) {
     let listUserFound: any[] = [];

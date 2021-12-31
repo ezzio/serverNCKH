@@ -104,3 +104,22 @@ export async function uploadAvatar(req: Request, res: Response) {
     }
   }
 }
+
+export async function searchSubStringUserName(req: Request, res: Response) {
+  let request = req.body;
+  let userNameFound = await user_Schema
+    .find({ user_name: { $regex: "t" } })
+    .exec();
+  if (userNameFound.length > 0) {
+    let listUserFound: any[] = [];
+    for (const eachUser of userNameFound) {
+      listUserFound.push({
+        user_name: eachUser.user_name,
+        avatar: eachUser.avatar,
+      });
+    }
+    res.send({ isSuccess: true, listUserFound });
+  } else {
+    res.send({ isSuccess: false });
+  }
+}

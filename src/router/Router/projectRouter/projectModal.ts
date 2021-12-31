@@ -64,8 +64,6 @@ export async function createAProject(req: Request, res: Response) {
     if (err) {
       console.log(err);
     } else {
-      console.log(modal);
-
       res.send({ isSuccess: true, idProject: modal._id });
     }
   });

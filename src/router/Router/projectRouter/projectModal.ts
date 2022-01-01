@@ -68,3 +68,23 @@ export async function createAProject(req: Request, res: Response) {
     }
   });
 }
+
+export async function listUserInProject(req: Request, res: Response) {
+  let request = req.body;
+  let project = await project_Schema
+    .find({ _id: request.idProject })
+    .find()
+    .exec();
+  if (project.length > 0) {
+    let listMembers = project[0].members
+    let listMembersResult = [];
+    for(const member of listMembers) {
+      let eachMember = await User_Schema.find({ _id: member}).find().exec()
+      listMembersResult.push({
+        user_name: eachMember[0].user_name,
+        avatar: eachMember[0].avatar
+      })
+    }
+    res.send(listMembersResult)
+  }
+}

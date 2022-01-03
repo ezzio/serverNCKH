@@ -88,6 +88,7 @@ export async function listUserInProject(req: Request, res: Response) {
         .exec();
       listMembersResult.push({
         user_name: eachMember[0].user_name,
+        display_name: eachMember[0].display_name || "",
         avatar: eachMember[0].avatar,
         tag: member.tag,
       });

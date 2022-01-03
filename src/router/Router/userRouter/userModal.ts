@@ -119,6 +119,7 @@ export async function searchSubStringUserName(req: Request, res: Response) {
     for (const eachUser of userNameFound) {
       listUserFound.push({
         user_name: eachUser.user_name,
+        display_name: eachUser.display_name || "",
         avatar: eachUser.avatar,
       });
     }

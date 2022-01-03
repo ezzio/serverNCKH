@@ -7,7 +7,12 @@ const ProjectSchema = new Schema({
   avatarProject: { type: String },
   is_complete: { type: Boolean },
   process: { type: String },
-  members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  members: [
+    {
+      idMember: { type: Schema.Types.ObjectId, ref: "User" },
+      tag: { type: String },
+    },
+  ],
   owners: { type: Schema.Types.ObjectId, ref: "User" },
 });
 

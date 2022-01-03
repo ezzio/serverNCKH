@@ -35,10 +35,14 @@ export async function addAMemberIntoProject(req: Request, res: Response) {
         {
           $and: [{ owners: request.projectowner }, { _id: request.projectId }],
         },
-        { $push: { members: userName[0]._id } }
+        { $push: { members: { idMember: userName[0]._id, tag: "Member" } } }
       )
-      .exec((error: any) => {
+      .exec(async (error) => {
         if (!error) {
+          await User_Schema.updateOne(
+            { user_name: request.user_name },
+            { $push: { InfoAllProjectJoin: request.projectId } }
+          );
           res.send({ isSuccess: true });
         } else {
           res.send({ isSuccess: false });
@@ -54,9 +58,9 @@ export async function createAProject(req: Request, res: Response) {
   let project = new project_Schema({
     name: request.name,
     owners: request.owner,
-    members: [request.owner],
+    members: [{ idMember: request.owner, tag: "Leader" }],
   });
-  await User_Schema.findByIdAndUpdate(
+  await User_Schema.updateOne(
     { _id: request.owner },
     { $push: { InfoAllProjectJoin: project._id } }
   );
@@ -76,15 +80,18 @@ export async function listUserInProject(req: Request, res: Response) {
     .find()
     .exec();
   if (project.length > 0) {
-    let listMembers = project[0].members
+    let listMembers = project[0].members;
     let listMembersResult = [];
-    for(const member of listMembers) {
-      let eachMember = await User_Schema.find({ _id: member}).find().exec()
+    for (const member of listMembers) {
+      let eachMember = await User_Schema.find({ _id: member.idMember })
+        .find()
+        .exec();
       listMembersResult.push({
         user_name: eachMember[0].user_name,
-        avatar: eachMember[0].avatar
-      })
+        avatar: eachMember[0].avatar,
+        tag: member.tag,
+      });
     }
-    res.send(listMembersResult)
+    res.send(listMembersResult);
   }
 }

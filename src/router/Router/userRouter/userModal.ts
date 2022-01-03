@@ -29,7 +29,10 @@ export async function getUserInfo(req: Request, res: Response) {
   for (let project of projectOfUser) {
     let memberInRoom = [];
     for (let eachMember of project.members) {
-      let member = await user_Schema.find({ _id: eachMember }).find().exec();
+      let member = await user_Schema
+        .find({ _id: eachMember.idMember })
+        .find()
+        .exec();
       if (member) {
         memberInRoom.push({
           username: member[0].user_name,
@@ -85,9 +88,6 @@ export async function editProfile(req: Request, res: Response) {
 
 export async function uploadAvatar(req: Request, res: Response) {
   let request = req.body;
-  console.log(req.file);
-  console.log(request);
-
   if (req.file === undefined) return res.send("you must select a file.");
   const imgUrl = `${PORT}/photo/${req.file.filename}`;
   try {
@@ -109,6 +109,10 @@ export async function searchSubStringUserName(req: Request, res: Response) {
   let request = req.body;
   let userNameFound = await user_Schema
     .find({ user_name: { $regex: request.user_name } })
+    .exec();
+  let memberInProject = await project_Schema
+    .find({ _id: request.idProject })
+    .lean()
     .exec();
   if (userNameFound.length > 0) {
     let listUserFound: any[] = [];

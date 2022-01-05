@@ -99,48 +99,64 @@ export async function listUserInProject(req: Request, res: Response) {
 
 export const editRoleForUser = async (req: Request, res: Response) => {
   let request = req.body;
-  await User_Schema.find({
+  let findUserInProject = await User_Schema.find({
     $and: [
       { user_name: request.user_name },
       { InfoAllProjectJoin: { $in: [request.projectId] } },
     ],
   })
     .lean()
-    .exec(async (error) => {
-      if (error) {
-        res.send({ isSuccess: false, message: "user is not in project" });
-      } else {
-        await project_Schema
-          .find({ owners: request.owner })
+    .exec();
+  if (findUserInProject.length > 0) {
+    await User_Schema.find({
+      user_name: request.user_name,
+    })
+      .lean()
+      .exec(async (error, modal) => {
+        let checkOwnerProject = await project_Schema
+          .find({
+            $and: [{ _id: request.projectId }, { owners: request.owner }],
+          })
           .lean()
-          .exec(async (error) => {
-            if (error) {
-              res.send({ isSuccess: false, message: "cant not change role" });
-            } else {
-              await User_Schema.find({
-                user_name: request.user_name,
-              })
-                .lean()
-                .exec(async (error, modal) => {
-                  await project_Schema.updateOne(
-                    {
-                      $and: [
-                        { _id: request.projectId },
-                        {
-                          members: {
-                            $elemMatch: { idMember: { $eq: modal[0]._id } },
-                          },
-                        },
-                      ],
+          .exec();
+        if (checkOwnerProject.length > 0) {
+          await project_Schema
+            .updateOne(
+              {
+                $and: [
+                  { _id: request.projectId },
+                  {
+                    members: {
+                      $elemMatch: { idMember: { $eq: modal[0]._id } },
                     },
-                    { $set: { "members.$.tag": request.newRole } }
-                  );
-                  res.send({ isSuccess: true });
+                  },
+                ],
+              },
+              { $set: { "members.$.tag": request.newRole } }
+            )
+            .exec(async (error) => {
+              if (error) {
+                res.send({
+                  isSuccess: false,
+                  message: "Không thể sửa thông tin",
                 });
-            }
+              } else {
+                res.send({ isSuccess: true });
+              }
+            });
+        } else {
+          res.send({
+            isSuccess: false,
+            message: "Không thê chính sửa thông tin",
           });
-      }
+        }
+      });
+  } else {
+    res.send({
+      isSuccess: false,
+      message: "không tìm thấy người dùng trong project",
     });
+  }
 };
 
 export const deleteMemberInProject = async (req: Request, res: Response) => {

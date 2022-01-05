@@ -96,3 +96,80 @@ export async function listUserInProject(req: Request, res: Response) {
     res.send(listMembersResult);
   }
 }
+
+export const editRoleForUser = async (req: Request, res: Response) => {
+  let request = req.body;
+  await User_Schema.find({
+    $and: [
+      { user_name: request.user_name },
+      { InfoAllProjectJoin: { $in: [request.projectId] } },
+    ],
+  })
+    .lean()
+    .exec(async (error) => {
+      if (error) {
+        res.send({ isSuccess: false, message: "user is not in project" });
+      } else {
+        await project_Schema
+          .find({ owners: request.owner })
+          .lean()
+          .exec(async (error) => {
+            if (error) {
+              res.send({ isSuccess: false, message: "cant not change role" });
+            } else {
+              await User_Schema.find({
+                user_name: request.user_name,
+              })
+                .lean()
+                .exec(async (error, modal) => {
+                  await project_Schema.updateOne(
+                    {
+                      $and: [
+                        { _id: request.projectId },
+                        {
+                          members: {
+                            $elemMatch: { idMember: { $eq: modal[0]._id } },
+                          },
+                        },
+                      ],
+                    },
+                    { $set: { "members.$.tag": request.newRole } }
+                  );
+                  res.send({ isSuccess: true });
+                });
+            }
+          });
+      }
+    });
+};
+
+export const deleteMemberInProject = async (req: Request, res: Response) => {
+  let request = req.body;
+  let findProject = await project_Schema
+    .find({ $and: [{ _id: request.projectId }, { owners: request.owner }] })
+    .lean()
+    .exec();
+  if (findProject.length > 0) {
+    await User_Schema.find({
+      user_name: request.user_name,
+    })
+      .lean()
+      .exec(async (error, modal) => {
+        await project_Schema.updateOne(
+          {
+            _id: request.projectId,
+          },
+          {
+            $pull: {
+              members: {
+                idMember: modal[0]._id,
+              },
+            },
+          }
+        );
+        res.send({ isSuccess: true });
+      });
+  } else {
+    res.send({ isSuccess: false, message: "project not found" });
+  }
+};

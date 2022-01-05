@@ -1,6 +1,7 @@
 import { Document, Schema, ObjectId } from "mongoose";
 
 export default interface userSchemaInterface extends Document {
+
   user_name: string;
   password: string;
   display_name: string;

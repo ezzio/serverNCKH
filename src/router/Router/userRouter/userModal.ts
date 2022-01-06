@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import user_Schema from "../../../db/schema/User_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
-import { resolveSrv } from "dns/promises";
 
 let PORT = process.env.PORTURL || "http://localhost:4000";
 

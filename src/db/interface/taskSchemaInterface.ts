@@ -11,5 +11,6 @@ export default interface taskSchemaInterface extends Document {
   description: string,
   isOverdue: boolean,
   end_time: Date,
+  detailTask: [],
   taskers: any[]
 }

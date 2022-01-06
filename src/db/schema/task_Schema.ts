@@ -9,6 +9,7 @@ const task = new Schema({
   priority: { type: String, required: true },
   start_time: { type: Date, required: true },
   description:{ type: String },
+  detailTask: [{type:  Schema.Types.ObjectId}],
   isOverdue: { type: Boolean },
   end_time: { type: Date },
   taskers: [{ type: Schema.Types.ObjectId, ref: "User" }],

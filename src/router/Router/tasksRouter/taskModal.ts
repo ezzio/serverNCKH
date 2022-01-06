@@ -4,22 +4,27 @@ import columns_Schema from "../../../db/schema/columns_Schema";
 import User_Schema from "../../../db/schema/User_Schema";
 import task_Schema from "../../../db/schema/task_Schema";
 import { Job_Schema } from "../../../db/schema/jobs_Schema";
-
+import detailTask from "../../../db/schema/detailTask_Schema";
 export async function listTaskKanban(req: Request, res: Response) {
   let request = req.body;
   let result: any[] = [];
-  let memberInJob:any[] = [];
+  let memberInJob: any[] = [];
   let listColumn = await columns_Schema
     .find({ jobowner: request.jobowner })
     .lean()
     .exec();
   let findJob = await Job_Schema.find({ _id: request.jobowner }).lean().exec();
   let column = listColumn[0]?.column;
-  if(findJob.length > 0) {
-    for(const eachMemberInJob of findJob[0].members) {
-      let eachMember = await User_Schema.find({_id:eachMemberInJob }).lean().exec();
-      if(eachMember.length > 0) {
-        memberInJob.push({user_name: eachMember[0].user_name , avatar: eachMember[0].avatar})
+  if (findJob.length > 0) {
+    for (const eachMemberInJob of findJob[0].members) {
+      let eachMember = await User_Schema.find({ _id: eachMemberInJob })
+        .lean()
+        .exec();
+      if (eachMember.length > 0) {
+        memberInJob.push({
+          user_name: eachMember[0].user_name,
+          avatar: eachMember[0].avatar,
+        });
       }
     }
   }
@@ -53,7 +58,7 @@ export async function listTaskKanban(req: Request, res: Response) {
     }
     result.push({ id_column: element.id_column, eachColumnTask });
   }
-  res.send({ListTask: result , memberInJob} );
+  res.send({ ListTask: result, memberInJob });
 }
 
 export async function createTask(req: Request, res: Response) {
@@ -63,8 +68,8 @@ export async function createTask(req: Request, res: Response) {
     process: request.process,
     is_complete: false,
     priority: request.priority,
-    level: request.level,
     start_time: request.start_time,
+    decription: request.decription,
     end_time: request.end_time,
     taskers: [] as any,
   };
@@ -105,3 +110,8 @@ export async function deleteTask(req: Request, res: Response) {
     res.send({ isSuccess: true });
   });
 }
+
+export const createDetailTask = (req: Request, res: Response) => {
+  let request = req.body;
+  let User = new detailTask();
+};

@@ -7,7 +7,6 @@ export async function register(req: Request, res: Response) {
     .find({ user_name: request.user_name })
     .lean()
     .exec();
-    console.log(checkUser.length);
     
   if (checkUser.length == 0) {
     let User = new user_Schema({ ...req.body, gender: "male" });

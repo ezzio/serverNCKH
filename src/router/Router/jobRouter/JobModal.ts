@@ -4,10 +4,10 @@ import columns_Schema from "../../../db/schema/columns_Schema";
 import moment from "moment";
 import project_Schema from "../../../db/schema/Project_Schema";
 import User_Schema from "../../../db/schema/User_Schema";
-import { ObjectId } from "mongoose";
 
 export async function createAJob(req: Request, res: Response) {
   let request = req.body;
+  let allInfoUser: any[] = [];
   const dateFormat = "YYYY-MM-DD";
   try {
     let Job = new Job_Schema({
@@ -21,21 +21,24 @@ export async function createAJob(req: Request, res: Response) {
       members: [],
     });
     if (request.members) {
-      await request.members.map(async (member: string) => {
-        let user_Id = await User_Schema.find({ user_name: member })
+      for (const eachMember of request.members) {
+        let userFound = await User_Schema.find({ user_name: eachMember })
           .lean()
           .exec();
-        await Job_Schema.updateOne(
-          { _id: Job._id },
-          { $push: { members: user_Id[0]._id } }
-        );
-      });
+        if (userFound.length > 0) {
+          allInfoUser.push(userFound[0]._id);
+        }
+      }
     }
     new columns_Schema({ jobowner: Job._id }).save();
     await Job.save(async (err: any) => {
       if (err) {
         console.log(err);
       } else {
+        await Job_Schema.updateOne(
+          { _id: Job._id },
+          { $push: { members: { $each: allInfoUser } } }
+        );
         res.send({ isSuccess: true });
       }
     });
@@ -118,7 +121,6 @@ export async function ListJobs(req: Request, res: Response) {
 
 export async function editJob(req: Request, res: Response) {
   let request = req.body;
-
   let infoJob = await Job_Schema.findById({ _id: request.kanban_id })
     .lean()
     .exec();

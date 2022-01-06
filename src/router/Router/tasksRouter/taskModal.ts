@@ -22,6 +22,8 @@ export async function listTaskKanban(req: Request, res: Response) {
         .exec();
       if (eachMember.length > 0) {
         memberInJob.push({
+          
+          display_name: eachMember[0].display_name,
           user_name: eachMember[0].user_name,
           avatar: eachMember[0].avatar,
         });

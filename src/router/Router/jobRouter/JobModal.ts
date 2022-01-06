@@ -100,7 +100,7 @@ export async function ListJobs(req: Request, res: Response) {
       for (var i = 0; i < listMemberInProject[0].members.length; i++) {
         try {
           let eachMember = await User_Schema.find({
-            _id: listMemberInProject[0].members[i],
+            _id: listMemberInProject[0].members[i].idMember,
           })
             .lean()
             .exec();

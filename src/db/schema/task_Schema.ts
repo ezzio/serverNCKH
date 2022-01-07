@@ -3,7 +3,6 @@ import taskSchemaInterface from "../interface/taskSchemaInterface";
 
 const task = new Schema({
   title: { type: String, required: true },
-  decription: { type: String },
   is_complete: { type: Boolean, required: true },
   process: { type: Number, required: true },
   priority: { type: String, required: true },

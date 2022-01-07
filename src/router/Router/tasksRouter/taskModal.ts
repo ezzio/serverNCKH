@@ -5,6 +5,8 @@ import User_Schema from "../../../db/schema/User_Schema";
 import task_Schema from "../../../db/schema/task_Schema";
 import { Job_Schema } from "../../../db/schema/jobs_Schema";
 import detailTask from "../../../db/schema/detailTask_Schema";
+import { error } from "console";
+
 export async function listTaskKanban(req: Request, res: Response) {
   let request = req.body;
   let result: any[] = [];
@@ -22,7 +24,6 @@ export async function listTaskKanban(req: Request, res: Response) {
         .exec();
       if (eachMember.length > 0) {
         memberInJob.push({
-          
           display_name: eachMember[0].display_name,
           user_name: eachMember[0].user_name,
           avatar: eachMember[0].avatar,
@@ -39,11 +40,13 @@ export async function listTaskKanban(req: Request, res: Response) {
         for (const j of infoTask[0].taskers) {
           let eachMember = await User_Schema.find({ _id: j }).find().exec();
           members.push({
+            display_name: eachMember[0].display_name,
             user_name: eachMember[0].user_name,
             avatar: eachMember[0].avatar,
           });
         }
         eachColumnTask.push({
+          id: infoTask[0]._id,
           title: infoTask[0].title,
           decription: infoTask[0].decription,
           is_complete: infoTask[0].is_complete,
@@ -115,5 +118,68 @@ export async function deleteTask(req: Request, res: Response) {
 
 export const createDetailTask = (req: Request, res: Response) => {
   let request = req.body;
-  let User = new detailTask();
+  let newDetailTaskInfo = {
+    title: request.title,
+    is_complete: false,
+  };
+  let newDetailTask = new detailTask(newDetailTaskInfo);
+  newDetailTask.save(async (error) => {
+    if (!error) {
+      await task_Schema.updateOne(
+        { _id: request.taskOwner },
+        { $push: { detailTask: newDetailTask._id } }
+      );
+      res.send({ isSuccess: true });
+    } else {
+      res.send({ isSuccess: false });
+    }
+  });
 };
+
+export const editTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let taskEdit = await task_Schema.find({ _id: request.taskId }).lean().exec();
+  let memberInRequest: any[] = [];
+  for (const members of request.taskers) {
+    let eachMemember = await User_Schema.find({ user_name: members.user_name })
+      .lean()
+      .exec();
+    memberInRequest.push(eachMemember[0]._id);
+  }
+  let newTaskEdit = {
+    title: request.title || taskEdit[0].title,
+    is_complete: request.is_complete || taskEdit[0].is_complete,
+    process: request.process || taskEdit[0].process,
+    priority: request.priority || taskEdit[0].priority,
+    start_time: request.start_time || taskEdit[0].start_time,
+    description: request.description || taskEdit[0].description,
+    isOverdue: request.isOverdue || taskEdit[0].isOverdue,
+    end_time: request.end_time || taskEdit[0].end_time,
+    taskers: memberInRequest,
+  };
+  await task_Schema
+    .updateOne(
+      { _id: request.taskId },
+      {
+        $set: {
+          title: newTaskEdit.title,
+          is_complete: newTaskEdit.is_complete,
+          process: newTaskEdit.process,
+          priority: newTaskEdit.priority,
+          start_time: newTaskEdit.start_time,
+          description: newTaskEdit.description,
+          isOverdue: newTaskEdit.isOverdue,
+          end_time: newTaskEdit.end_time,
+          taskers: newTaskEdit.taskers,
+        },
+      }
+    )
+    .exec((error) => {
+      if (error) {
+        res.send({ isSuccess: false });
+      } else {
+        res.send({ isSuccess: true });
+      }
+    });
+};
+

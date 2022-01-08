@@ -198,7 +198,7 @@ export const listDetailTask = async (req: Request, res: Response) => {
         .find()
         .exec();
       infoAllDetailTask.push({
-        title: detailTask[0].title,
+        name: detailTask[0].title,
         is_complete: detailTask[0].is_complete,
         assignOn: detailTask[0].assignOn,
       });

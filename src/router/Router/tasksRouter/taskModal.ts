@@ -4,7 +4,7 @@ import columns_Schema from "../../../db/schema/columns_Schema";
 import User_Schema from "../../../db/schema/User_Schema";
 import task_Schema from "../../../db/schema/task_Schema";
 import { Job_Schema } from "../../../db/schema/jobs_Schema";
-import detailTask from "../../../db/schema/detailTask_Schema";
+import detailTask_Schema from "../../../db/schema/detailTask_Schema";
 import { error } from "console";
 
 export async function listTaskKanban(req: Request, res: Response) {
@@ -122,7 +122,7 @@ export const createDetailTask = (req: Request, res: Response) => {
     title: request.title,
     is_complete: false,
   };
-  let newDetailTask = new detailTask(newDetailTaskInfo);
+  let newDetailTask = new detailTask_Schema(newDetailTaskInfo);
   newDetailTask.save(async (error) => {
     if (!error) {
       await task_Schema.updateOne(
@@ -183,3 +183,28 @@ export const editTask = async (req: Request, res: Response) => {
     });
 };
 
+export const listDetailTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let allDetailTask = await task_Schema
+    .find({ _id: request.taskOwner })
+    .find()
+    .exec();
+  if (allDetailTask.length > 0) {
+    let detailTask = allDetailTask[0].detailTask;
+    let infoAllDetailTask: any[] = [];
+    for (const eachDetailTask of detailTask) {
+      let detailTask = await detailTask_Schema
+        .find({ _id: eachDetailTask })
+        .find()
+        .exec();
+      infoAllDetailTask.push({
+        title: detailTask[0].title,
+        is_complete: detailTask[0].is_complete,
+        assignOn: detailTask[0].assignOn,
+      });
+    }
+    res.send({ isSuccess: true, infoAllDetailTask });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};

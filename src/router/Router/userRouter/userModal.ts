@@ -109,7 +109,6 @@ export async function searchSubStringUserName(req: Request, res: Response) {
   let userNameFound = await user_Schema
     .find({ user_name: { $regex: request.user_name } })
     .exec();
-
   if (userNameFound.length > 0) {
     let listUserFound: any[] = [];
     for (const eachUser of userNameFound) {

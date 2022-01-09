@@ -208,3 +208,37 @@ export const listDetailTask = async (req: Request, res: Response) => {
     res.send({ isSuccess: false });
   }
 };
+
+export const editDetailTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let detailTask = await detailTask_Schema
+    .find({ _id: request.idDetailTask })
+    .lean()
+    .exec();
+  if (detailTask.length > 0) {
+    await detailTask_Schema.updateOne(
+      { _id: request.idDetailTask },
+      { $set: { title: request.name } }
+    );
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
+
+export const deleteDetailTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let detailTask = await detailTask_Schema
+    .find({ _id: request.idDetailTask })
+    .lean()
+    .exec();
+  if (detailTask.length > 0) {
+    await detailTask_Schema.updateOne(
+      { _id: request.idDetailTask },
+      { $set: { title: request.name } }
+    );
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};

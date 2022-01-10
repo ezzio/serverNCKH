@@ -8,8 +8,12 @@ import {
   listDetailTask,
   editDetailTask,
   deleteDetailTask,
+  uploadFileInDetailTask,
 } from "./taskModal";
 const router = express.Router();
+const multer = require("multer");
+import { storage } from "../../../db/functionForDB/upload";
+const upload = multer({ dest: "uploads/" });
 
 router.post("/ListTasks/kaban", listTaskKanban);
 router.post("/create_a_new_task", createTask);
@@ -19,5 +23,10 @@ router.post("/editTask", editTask);
 router.post("/listAllDetailTask", listDetailTask);
 router.post("/editDetailTask", editDetailTask);
 router.post("/deleteDetailTask", deleteDetailTask);
+router.post(
+  "/uploadFileDetailTask",
+  multer({ storage }).single("my_file"),
+  uploadFileInDetailTask
+);
 
 export default router;

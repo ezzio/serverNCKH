@@ -63,7 +63,15 @@ export async function listTaskKanban(req: Request, res: Response) {
     }
     result.push({ id_column: element.id_column, eachColumnTask });
   }
-  res.send({ ListTask: result, memberInJob });
+  res.send({
+    jobInfo: {
+      title: findJob[0].title,
+      start_time: findJob[0].start_time,
+      end_time: findJob[0].end_time,
+    },
+    ListTask: result,
+    memberInJob,
+  });
 }
 
 export async function createTask(req: Request, res: Response) {
@@ -241,4 +249,8 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
   } else {
     res.send({ isSuccess: false });
   }
+};
+
+export const uploadFileInDetailTask = async (req: Request, res: Response) => {
+  let request = req.file;
 };

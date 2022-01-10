@@ -5,7 +5,8 @@ import User_Schema from "../../../db/schema/User_Schema";
 import task_Schema from "../../../db/schema/task_Schema";
 import { Job_Schema } from "../../../db/schema/jobs_Schema";
 import detailTask_Schema from "../../../db/schema/detailTask_Schema";
-import { error } from "console";
+import Attachment_Schema from "../../../db/schema/Attachments_Schema";
+let PORT = process.env.PORTURL || "http://localhost:4000";
 
 export async function listTaskKanban(req: Request, res: Response) {
   let request = req.body;
@@ -81,6 +82,7 @@ export async function createTask(req: Request, res: Response) {
     process: request.process,
     is_complete: false,
     priority: request.priority,
+    description:request.description,
     start_time: request.start_time,
     decription: request.decription,
     end_time: request.end_time,
@@ -112,16 +114,21 @@ export async function createTask(req: Request, res: Response) {
 
 export async function deleteTask(req: Request, res: Response) {
   let request = req.body;
-  await columns_Schema.updateOne(
-    {
-      jobowner: request.jobowner,
-      "column.id_column": 0,
-    },
-    { $pull: { "column.$.tasks": request.taskId } }
-  );
-  await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
-    res.send({ isSuccess: true });
-  });
+  await columns_Schema
+    .updateOne(
+      {
+        jobowner: request.jobowner,
+        "column.id_column": 0,
+      },
+      { $pull: { "column.$.tasks": request.taskId } }
+    )
+    .exec(async (error) => {
+      if (!error) {
+        await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
+          res.send({ isSuccess: true });
+        });
+      }
+    });
 }
 
 export const createDetailTask = (req: Request, res: Response) => {
@@ -205,10 +212,24 @@ export const listDetailTask = async (req: Request, res: Response) => {
         .find({ _id: eachDetailTask })
         .find()
         .exec();
+      let attachmentsOfDetailTask: any[] = [];
+      for (const eachAttachment of detailTask[0].attachments) {
+        let each = await Attachment_Schema.find({ _id: eachAttachment })
+          .lean()
+          .exec();
+        if (each) {
+          attachmentsOfDetailTask.push({
+            idAtachment: each[0]._id,
+            nameType: each[0].nameType,
+            uploaded_at: each[0].uploaded_at,
+          });
+        }
+      }
       infoAllDetailTask.push({
         name: detailTask[0].title,
         is_complete: detailTask[0].is_complete,
         assignOn: detailTask[0].assignOn,
+        attachmentsOfDetailTask: attachmentsOfDetailTask,
       });
     }
     res.send({ isSuccess: true, infoAllDetailTask });
@@ -252,5 +273,22 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
 };
 
 export const uploadFileInDetailTask = async (req: Request, res: Response) => {
-  let request = req.file;
+  let request = req.body;
+  if (req.file === undefined) return res.send("you must select a file.");
+  const zipFileDownloadURL = `${PORT}/photo/${req.file.filename}`;
+  let newAttachment = new Attachment_Schema({
+    URL: zipFileDownloadURL,
+    nameType: "zip",
+  });
+  newAttachment.save(async (error: any) => {
+    if (error) {
+      res.send({ isSuccess: false });
+    } else {
+      await detailTask_Schema.updateOne(
+        { _id: request.idDetailTask },
+        { $push: { attachments: newAttachment._id } }
+      );
+      res.send({ isSuccess: true });
+    }
+  });
 };

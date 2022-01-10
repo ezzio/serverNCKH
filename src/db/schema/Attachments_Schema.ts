@@ -1,14 +1,11 @@
 import { model, Schema, Model, Document } from "mongoose";
 
-const AttachMent: Schema = new Schema(
+const AttachMent = new Schema(
   {
-    task_id: { type: Schema.Types.ObjectId, ref: "task" },
-    projectowner: { type: Schema.Types.ObjectId, ref: "Project" },
-    location: { type: "string" },
+    URL: { type: "string" },
     nameType: { type: "string" },
     uploaded_at: { type: Date, default: Date.now },
-  },
-  { collection: "attrachment" }
+  }
 );
 
-export const AttachmentsSchema: Model<any> = model("AttachMent", AttachMent);
+export default model<any>("AttachMent", AttachMent);

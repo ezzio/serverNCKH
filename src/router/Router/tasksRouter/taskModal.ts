@@ -279,7 +279,7 @@ export const editDetailTask = async (req: Request, res: Response) => {
   }
 };
 
-export const completeDetailTask = async (req: Request, res: Response) => {
+export const completeAndUncompleteDetailTask = async (req: Request, res: Response) => {
   let request = req.body;
   let detailTask = await detailTask_Schema
     .find({ _id: request.idDetailTask })

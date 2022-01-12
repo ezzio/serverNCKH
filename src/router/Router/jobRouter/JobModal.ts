@@ -121,34 +121,47 @@ export async function ListJobs(req: Request, res: Response) {
 
 export async function editJob(req: Request, res: Response) {
   let request = req.body;
-  let infoJob = await Job_Schema.findById({ _id: request.kanban_id })
-    .lean()
-    .exec();
-  let edit_Job = {
-    title: request.title || infoJob.projectowner,
-    start_time: request.start_time || infoJob.start_time,
-    end_time: request.end_time || infoJob.end_time,
-    priority: request.priority || infoJob.priority,
-  };
-  await Job_Schema.updateOne(
-    { _id: request.kanban_id },
-    {
-      $set: {
-        title: edit_Job.title,
-        start_time: edit_Job.start_time,
-        end_time: edit_Job.end_time,
-        priority: edit_Job.priority,
-      },
-    },
-    { new: true },
-    (err) => {
+  let infoJob = await Job_Schema.find({ _id: request.kanban_id }).lean().exec();
+  if (infoJob.length > 0) {
+    let memberRequestChange = [];
+    if (request.members.length > 0) {
+      for (const member of request.members) {
+        let eachMember = await User_Schema.find({ user_name: member })
+          .lean()
+          .exec();
+        if (eachMember.length > 0) {
+          memberRequestChange.push(eachMember[0]._id);
+        }
+      }
+    }
+    let edit_Job = {
+      title: request.title || infoJob[0].projectowner,
+      start_time: request.start_time || infoJob[0].start_time,
+      end_time: request.end_time || infoJob[0].end_time,
+      priority: request.priority || infoJob[0].priority,
+      members: infoJob[0].members,
+    };
+    await Job_Schema.updateOne(
+      { _id: request.kanban_id },
+      {
+        $set: {
+          title: edit_Job.title,
+          start_time: edit_Job.start_time,
+          end_time: edit_Job.end_time,
+          priority: edit_Job.priority,
+          members: edit_Job.members,
+        },
+      }
+    ).exec((err: any) => {
       if (err) {
         res.send({ error: err });
       } else {
-        res.send({ success: true });
+        res.send({ isSuccess: true });
       }
-    }
-  );
+    });
+  } else {
+    res.send({ isSuccess: false });
+  }
 }
 
 export async function deleteJob(req: Request, res: Response) {

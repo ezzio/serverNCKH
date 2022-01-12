@@ -9,6 +9,7 @@ import {
   editDetailTask,
   deleteDetailTask,
   uploadFileInDetailTask,
+  completeAndUncompleteDetailTask,
 } from "./taskModal";
 const router = express.Router();
 const multer = require("multer");
@@ -23,6 +24,10 @@ router.post("/editTask", editTask);
 router.post("/listAllDetailTask", listDetailTask);
 router.post("/editDetailTask", editDetailTask);
 router.post("/deleteDetailTask", deleteDetailTask);
+router.post(
+  "/completeAndUncompleteDetailTask",
+  completeAndUncompleteDetailTask
+);
 router.post(
   "/uploadFileDetailTask",
   multer({ storage }).single("my_file"),

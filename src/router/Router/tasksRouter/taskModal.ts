@@ -303,11 +303,17 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
     .lean()
     .exec();
   if (detailTask.length > 0) {
-    await detailTask_Schema.updateOne(
-      { _id: request.idDetailTask },
-      { $pull: { title: request.name } }
-    );
-    res.send({ isSuccess: true });
+    await task_Schema
+      .updateOne(
+        { _id: request.idTask },
+        { $pull: { title: request.idDetailTask } }
+      )
+      .exec(async (err: any) => {
+        if (!err) {
+          await detailTask_Schema.deleteOne({ _id: request.idDetailTask });
+          res.send({ isSuccess: true });
+        }
+      });
   } else {
     res.send({ isSuccess: false });
   }

@@ -136,7 +136,7 @@ export const createDetailTask = (req: Request, res: Response) => {
   let newDetailTaskInfo = {
     title: request.title,
     is_complete: false,
-    idProjectOwner: request.idProjectOwner
+    idProjectOwner: request.idProjectOwner,
   };
   let newDetailTask = new detailTask_Schema(newDetailTaskInfo);
   newDetailTask.save(async (error) => {
@@ -318,6 +318,7 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
   if (req.file === undefined) return res.send("you must select a file.");
   const zipFileDownloadURL = `${PORT}/photo/${req.file.filename}`;
   let newAttachment = new Attachment_Schema({
+    name: req.file.filename,
     URL: zipFileDownloadURL,
     nameType: "zip",
   });

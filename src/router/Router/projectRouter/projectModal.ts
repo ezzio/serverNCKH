@@ -212,7 +212,9 @@ export const listAllAttachmentInProject = async (
       .lean()
       .exec();
     for (const eachDetailTask of allDetailTask) {
+      console.log(eachDetailTask);
       let eachAttachmentInDetailTask = eachDetailTask.attachments;
+      console.log(eachAttachmentInDetailTask);
       if (eachAttachmentInDetailTask.length > 0) {
         for (const eachAttachment of eachAttachmentInDetailTask) {
           let attachment = await Attachment_Schema.find({ _id: eachAttachment })

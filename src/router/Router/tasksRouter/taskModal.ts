@@ -136,6 +136,7 @@ export const createDetailTask = (req: Request, res: Response) => {
   let newDetailTaskInfo = {
     title: request.title,
     is_complete: false,
+    idProjectOwner: request.idProjectOwner
   };
   let newDetailTask = new detailTask_Schema(newDetailTaskInfo);
   newDetailTask.save(async (error) => {

@@ -1,7 +1,9 @@
 import User_Schema from "../../../db/schema/User_Schema";
 import { Request, Response } from "express";
 import project_Schema from "../../../db/schema/Project_Schema";
-
+import detailTask_Schema from "../../../db/schema/detailTask_Schema";
+import Attachment_Schema from "../../../db/schema/Attachments_Schema";
+let PORT = process.env.PORTURL || "http://localhost:4000";
 export async function listAllProject(req: Request, res: Response) {
   let request = req.body;
   let user = await User_Schema.findById({ _id: request.owner }).lean().exec();
@@ -187,5 +189,45 @@ export const deleteMemberInProject = async (req: Request, res: Response) => {
       });
   } else {
     res.send({ isSuccess: false, message: "project not found" });
+  }
+};
+
+export const listAllAttachmentInProject = async (
+  req: Request,
+  res: Response
+) => {
+  let request = req.body;
+  let userInfo = await User_Schema.find({ _id: request.owner }).lean().exec();
+  let projectInfo = await project_Schema
+    .find({ _id: request.idproject })
+    .lean()
+    .exec();
+  if (projectInfo.length > 0 && userInfo.length > 0) {
+    let result: any[] = [];
+    var isProjectOwner = projectInfo[0].owners == request.owner;
+    let allDetailTask = await detailTask_Schema
+      .find({
+        idProjectOwner: request.idproject,
+      })
+      .lean()
+      .exec();
+    for (const eachDetailTask of allDetailTask) {
+      let eachAttachmentInDetailTask = eachDetailTask.attachments;
+      if (eachAttachmentInDetailTask.length > 0) {
+        for (const eachAttachment of eachAttachmentInDetailTask) {
+          let attachment = await Attachment_Schema.find({ _id: eachAttachment })
+            .lean()
+            .exec();
+          result.push({
+            URL: attachment[0].URL,
+            nameType: attachment[0].nameType,
+            uploaded_at: attachment[0].uploaded_at,
+          });
+        }
+      }
+    }
+    res.send({ isSuccess: true, allAttachment: result, isProjectOwner });
+  } else {
+    res.send({ isSuccess: false });
   }
 };

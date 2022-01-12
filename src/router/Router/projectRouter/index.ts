@@ -6,6 +6,7 @@ import {
   listUserInProject,
   editRoleForUser,
   deleteMemberInProject,
+  listAllAttachmentInProject,
 } from "./projectModal";
 const router = express.Router();
 
@@ -15,4 +16,5 @@ router.post("/listMemberInProject", listUserInProject);
 router.post("/create_a_project", createAProject);
 router.post("/editRoleOfUser", editRoleForUser);
 router.post("/deleteUserInProject", deleteMemberInProject);
+router.post("/listAllAttachmentInProject", listAllAttachmentInProject);
 export default router;

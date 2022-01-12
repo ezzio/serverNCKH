@@ -223,7 +223,6 @@ export const listDetailTask = async (req: Request, res: Response) => {
         .find()
         .exec();
       let attachmentsOfDetailTask: any[] = [];
-
       for (const eachMemberInTask of taskFound[0].taskers) {
         let eachMember = await User_Schema.find({ _id: eachMemberInTask })
           .lean()
@@ -243,6 +242,7 @@ export const listDetailTask = async (req: Request, res: Response) => {
         if (each) {
           attachmentsOfDetailTask.push({
             idAtachment: each[0]._id,
+            name: each[0].name,
             nameType: each[0].nameType,
             uploaded_at: each[0].uploaded_at,
           });

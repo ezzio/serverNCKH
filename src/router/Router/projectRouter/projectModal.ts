@@ -221,6 +221,7 @@ export const listAllAttachmentInProject = async (
             .lean()
             .exec();
           result.push({
+            name: attachment[0].name,
             URL: attachment[0].URL,
             nameType: attachment[0].nameType,
             uploaded_at: attachment[0].uploaded_at,

@@ -1,5 +1,5 @@
 import { GridFsStorage } from "multer-gridfs-storage";
-
+import { uuid } from 'uuidv4';
 export const storage = new GridFsStorage({
   url: process.env.MONGODB_URL || "mongodb://localhost:27017/Horenso_Manager",
   options: { useNewUrlParser: true, useUnifiedTopology: true },
@@ -11,7 +11,7 @@ export const storage = new GridFsStorage({
     }
     return {
       bucketName: "photos",
-      filename: `${Date.now()}-DuongHuuThang-${file.originalname}`,
+      filename: `${Date.now()}-${uuid()}-${file.originalname}`,
     };
   },
 });

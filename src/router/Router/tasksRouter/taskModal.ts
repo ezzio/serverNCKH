@@ -305,7 +305,7 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
   if (detailTask.length > 0) {
     await detailTask_Schema.updateOne(
       { _id: request.idDetailTask },
-      { $set: { title: request.name } }
+      { $pull: { title: request.name } }
     );
     res.send({ isSuccess: true });
   } else {

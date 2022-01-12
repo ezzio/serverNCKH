@@ -306,7 +306,7 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
     await task_Schema
       .updateOne(
         { _id: request.idTask },
-        { $pull: { title: request.idDetailTask } }
+        { $pull: { detailTask: request.idDetailTask } }
       )
       .exec(async (err: any) => {
         if (!err) {

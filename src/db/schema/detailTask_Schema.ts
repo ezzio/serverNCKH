@@ -5,6 +5,7 @@ const detailTask = new Schema({
   title: { type: String },
   is_complete: { type: Boolean },
   attachments: [{ type: Schema.Types.ObjectId }],
+  idProjectOwner: { type: Schema.Types.ObjectId },
   assignOn: { type: Date, default: Date.now },
 });
 export default model<detaiTaskInterface>("detaiTask", detailTask);

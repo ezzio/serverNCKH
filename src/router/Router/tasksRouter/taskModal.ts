@@ -82,7 +82,7 @@ export async function createTask(req: Request, res: Response) {
     process: request.process,
     is_complete: false,
     priority: request.priority,
-    description:request.description,
+    description: request.description,
     start_time: request.start_time,
     decription: request.decription,
     end_time: request.end_time,
@@ -200,19 +200,41 @@ export const editTask = async (req: Request, res: Response) => {
 
 export const listDetailTask = async (req: Request, res: Response) => {
   let request = req.body;
-  let allDetailTask = await task_Schema
+  let taskFound = await task_Schema
     .find({ _id: request.taskOwner })
     .find()
     .exec();
-  if (allDetailTask.length > 0) {
-    let detailTask = allDetailTask[0].detailTask;
+  if (taskFound.length > 0) {
+    let infoTask = {
+      is_complete: taskFound[0].is_complete,
+      process: taskFound[0].process,
+      priority: taskFound[0].priority,
+      start_time: taskFound[0].start_time,
+      end_time: taskFound[0].start_time,
+      description: taskFound[0].description || "",
+    };
+    let detailTask = taskFound[0].detailTask;
     let infoAllDetailTask: any[] = [];
+    let memberInTask: any[] = [];
     for (const eachDetailTask of detailTask) {
       let detailTask = await detailTask_Schema
         .find({ _id: eachDetailTask })
         .find()
         .exec();
       let attachmentsOfDetailTask: any[] = [];
+
+      for (const eachMemberInTask of taskFound[0].taskers) {
+        let eachMember = await User_Schema.find({ _id: eachMemberInTask })
+          .lean()
+          .exec();
+        if (eachMember.length > 0) {
+          memberInTask.push({
+            display_name: eachMember[0].display_name,
+            user_name: eachMember[0].user_name,
+            avatar: eachMember[0].avatar,
+          });
+        }
+      }
       for (const eachAttachment of detailTask[0].attachments) {
         let each = await Attachment_Schema.find({ _id: eachAttachment })
           .lean()
@@ -226,13 +248,14 @@ export const listDetailTask = async (req: Request, res: Response) => {
         }
       }
       infoAllDetailTask.push({
+        id: detailTask[0]._id,
         name: detailTask[0].title,
         is_complete: detailTask[0].is_complete,
         assignOn: detailTask[0].assignOn,
         attachmentsOfDetailTask: attachmentsOfDetailTask,
       });
     }
-    res.send({ isSuccess: true, infoAllDetailTask });
+    res.send({ isSuccess: true, infoTask, infoAllDetailTask, memberInTask });
   } else {
     res.send({ isSuccess: false });
   }
@@ -248,6 +271,23 @@ export const editDetailTask = async (req: Request, res: Response) => {
     await detailTask_Schema.updateOne(
       { _id: request.idDetailTask },
       { $set: { title: request.name } }
+    );
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
+
+export const completeDetailTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let detailTask = await detailTask_Schema
+    .find({ _id: request.idDetailTask })
+    .lean()
+    .exec();
+  if (detailTask.length > 0) {
+    await detailTask_Schema.updateOne(
+      { _id: request.idDetailTask },
+      { $set: { is_complete: !detailTask[0].is_complete } }
     );
     res.send({ isSuccess: true });
   } else {

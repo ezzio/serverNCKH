@@ -112,6 +112,21 @@ export async function createTask(req: Request, res: Response) {
   });
 }
 
+export const updateTaskOverdue = (req: Request, res: Response) => {
+  let request = req.body;
+  if (request.ListTaskOverdue) {
+    request.ListTaskOverdue.map(async (task: any) => {
+      await task_Schema.updateOne(
+        { _id: task },
+        { $set: { isOverdue: false } }
+      );
+      res.send({ isSuccess: true });
+    });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
+
 export async function deleteTask(req: Request, res: Response) {
   let request = req.body;
   await columns_Schema
@@ -284,28 +299,42 @@ export const completeAndUncompleteDetailTask = async (
   res: Response
 ) => {
   let request = req.body;
-  let detailTask = await detailTask_Schema
-    .find({ _id: request.idDetailTask })
+  let TaskInfo = await task_Schema.find({ _id: request.idTask }).lean().exec();
+  let userChange = await User_Schema.find({ user_name: request.completed_by })
     .lean()
     .exec();
-  let user = await User_Schema.find({ user_name: request.user_name })
-    .lean()
-    .exec();
-  if (detailTask.length > 0 && user.length > 0) {
-    await detailTask_Schema.updateOne(
-      { _id: request.idDetailTask },
-      {
-        $set: {
-          is_complete: !detailTask[0].is_complete,
-          completed_at: Date.now(),
-          completed_by: user[0]._id,
-        },
-      }
-    );
-    res.send({ isSuccess: true });
-  } else {
-    res.send({ isSuccess: false });
+  let detailTaskComplete = request.idDetailTask;
+  
+  let listAllDetailTask = TaskInfo[0].detailTask;
+  
+  for (const eachDetailTask of listAllDetailTask) {
+
+    if (JSON.stringify(detailTaskComplete).indexOf(JSON.stringify(eachDetailTask)) != -1) {
+      await detailTask_Schema.updateOne(
+        { _id: eachDetailTask },
+        {
+          $set: {
+            is_complete: true,
+            completed_at: Date.now(),
+            completed_by: userChange[0]._id,
+          },
+        }
+      );
+    } else {
+
+      await detailTask_Schema.updateOne(
+        { _id: eachDetailTask },
+        {
+          $set: {
+            is_complete: false,
+            completed_at: Date.now(),
+            completed_by: userChange[0]._id,
+          },
+        }
+      );
+    }
   }
+  res.send({ isSuccess: true });
 };
 
 export const deleteDetailTask = async (req: Request, res: Response) => {

@@ -139,6 +139,7 @@ export async function editJob(req: Request, res: Response) {
       start_time: request.start_time || infoJob[0].start_time,
       end_time: request.end_time || infoJob[0].end_time,
       priority: request.priority || infoJob[0].priority,
+      is_completed: request.is_completed || infoJob[0].is_completed,
       members: infoJob[0].members,
     };
     await Job_Schema.updateOne(
@@ -149,6 +150,8 @@ export async function editJob(req: Request, res: Response) {
           start_time: edit_Job.start_time,
           end_time: edit_Job.end_time,
           priority: edit_Job.priority,
+          is_completed: edit_Job.is_completed,
+
           members: edit_Job.members,
         },
       }

@@ -279,16 +279,28 @@ export const editDetailTask = async (req: Request, res: Response) => {
   }
 };
 
-export const completeAndUncompleteDetailTask = async (req: Request, res: Response) => {
+export const completeAndUncompleteDetailTask = async (
+  req: Request,
+  res: Response
+) => {
   let request = req.body;
   let detailTask = await detailTask_Schema
     .find({ _id: request.idDetailTask })
     .lean()
     .exec();
-  if (detailTask.length > 0) {
+  let user = await User_Schema.find({ user_name: request.user_name })
+    .lean()
+    .exec();
+  if (detailTask.length > 0 && user.length > 0) {
     await detailTask_Schema.updateOne(
       { _id: request.idDetailTask },
-      { $set: { is_complete: !detailTask[0].is_complete } }
+      {
+        $set: {
+          is_complete: !detailTask[0].is_complete,
+          completed_at: Date.now(),
+          completed_by: user[0]._id,
+        },
+      }
     );
     res.send({ isSuccess: true });
   } else {

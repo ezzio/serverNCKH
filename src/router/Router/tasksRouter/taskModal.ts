@@ -86,6 +86,7 @@ export async function createTask(req: Request, res: Response) {
     start_time: request.start_time,
     decription: request.decription,
     end_time: request.end_time,
+    isOverdue: false,
     taskers: [] as any,
   };
   let listTaskers = request.taskers;

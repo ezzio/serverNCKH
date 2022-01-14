@@ -39,7 +39,7 @@ export async function createAJob(req: Request, res: Response) {
           { _id: Job._id },
           { $push: { members: { $each: allInfoUser } } }
         );
-        res.send({ isSuccess: true });
+        res.send({ isSuccess: true, idJob: Job._id });
       }
     });
   } catch (err) {

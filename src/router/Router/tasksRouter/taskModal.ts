@@ -300,7 +300,7 @@ export const completeAndUncompleteDetailTask = async (
 ) => {
   let request = req.body;
   let TaskInfo = await task_Schema.find({ _id: request.idTask }).lean().exec();
-  let userChange = await User_Schema.find({ user_name: request.completed_by })
+  let userChange = await User_Schema.find({ _id: request.completed_by })
     .lean()
     .exec();
   let detailTaskComplete = request.idDetailTask;

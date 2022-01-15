@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import user_Schema from "../../../db/schema/User_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
+import task_Schema from "../../../db/schema/task_Schema";
 
 let PORT = process.env.PORTURL || "http://localhost:4000";
 
@@ -8,6 +9,7 @@ export async function getUserInfo(req: Request, res: Response) {
   let request = req.body;
   let result = [];
   let allProject = [];
+  let allTask = [];
   let userInfo = await user_Schema.find({ _id: request.owner }).find().exec();
   if (userInfo.length > 0) {
     result.push({
@@ -22,6 +24,7 @@ export async function getUserInfo(req: Request, res: Response) {
       },
     });
   }
+  /// find project of User
   let projectOfUser = await project_Schema.find({
     owners: request.owner,
   });
@@ -45,7 +48,23 @@ export async function getUserInfo(req: Request, res: Response) {
       members: memberInRoom,
     });
   }
-  await result.push({ allProject: allProject });
+  //find task have user
+  let findAllTaskuserJoin = await task_Schema.find({
+    taskers: {
+      $in: request.owner,
+    },
+  });
+  for (const eachTask of findAllTaskuserJoin) {
+    allTask.push({
+      title: eachTask.title,
+      process: eachTask.process,
+      is_complete: eachTask.is_complete,
+      priority: eachTask.priority,
+      start_time: eachTask.start_time,
+      end_time: eachTask.end_time,
+    });
+  }
+  await result.push({ allProject, allTask });
   res.send(result);
 }
 

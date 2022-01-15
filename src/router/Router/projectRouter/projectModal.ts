@@ -81,9 +81,12 @@ export async function listUserInProject(req: Request, res: Response) {
     .find({ _id: request.idProject })
     .find()
     .exec();
-  if (project.length > 0) {
+  let userInfo = await User_Schema.find({ _id: request.owner }).lean().exec();
+
+  if (project.length > 0 && userInfo.length > 0) {
     let listMembers = project[0].members;
     let listMembersResult = [];
+    let isProjectOwner = false;
     for (const member of listMembers) {
       let eachMember = await User_Schema.find({ _id: member.idMember })
         .find()
@@ -95,7 +98,14 @@ export async function listUserInProject(req: Request, res: Response) {
         tag: member.tag,
       });
     }
-    res.send(listMembersResult);
+    let checkOwnerProject = await project_Schema
+      .find({ $and: [{ owners: request.owner }, { _id: request.idProject }] })
+      .lean();
+    if (checkOwnerProject.length > 0) isProjectOwner = true;
+
+    res.send({ isSuccess: true, listMembersResult, isProjectOwner });
+  } else {
+    res.send({ isSuccess: false });
   }
 }
 

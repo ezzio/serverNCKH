@@ -8,6 +8,7 @@ import User_Schema from "../../../db/schema/User_Schema";
 export async function createAJob(req: Request, res: Response) {
   let request = req.body;
   let allInfoUser: any[] = [];
+  let memberInJob: any[] = [];
   const dateFormat = "YYYY-MM-DD";
   try {
     let Job = new Job_Schema({
@@ -27,6 +28,10 @@ export async function createAJob(req: Request, res: Response) {
           .exec();
         if (userFound.length > 0) {
           allInfoUser.push(userFound[0]._id);
+          memberInJob.push({
+            user_name: userFound[0].user_name,
+            avatar: userFound[0].avatar,
+          });
         }
       }
     }
@@ -39,7 +44,18 @@ export async function createAJob(req: Request, res: Response) {
           { _id: Job._id },
           { $push: { members: { $each: allInfoUser } } }
         );
-        res.send({ isSuccess: true, idJob: Job._id });
+        res.send({
+          isSuccess: true,
+          infoJob: {
+            idJob: Job.idJob,
+            priority: Job.priority,
+            is_completed: Job.is_completed,
+            start_time: Job.start_time,
+            end_time: Job.end_time, 
+            process: Job.process,
+            memberInJob
+          },
+        });
       }
     });
   } catch (err) {

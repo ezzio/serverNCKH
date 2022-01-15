@@ -6,7 +6,7 @@ export const storage = new GridFsStorage({
   file: (req, file) => {
     const match = ["image/png", "image/jpeg"];
     if (match.indexOf(file.mimetype) === -1) {
-      const filename = `${Date.now()}-DuongHuuThang-${file.originalname}`;
+      const filename = `${Date.now()}-${uuid()}-${file.originalname}`;
       return filename;
     }
     return {

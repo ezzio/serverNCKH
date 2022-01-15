@@ -369,7 +369,7 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
   let newAttachment = new Attachment_Schema({
     name: req.file.filename,
     URL: zipFileDownloadURL,
-    nameType: "zip",
+    nameType: req.file.mimetype,
   });
   newAttachment.save(async (error: any) => {
     if (error) {

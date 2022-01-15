@@ -16,7 +16,6 @@ export const taskChartInProject = async (req: Request, res: Response) => {
   }).lean();
   if (allJobInProject.length > 0) {
     for (const eachJob of allJobInProject) {
-      // console.log(eachJob);
       let column = await columns_Schema
         .find({ jobowner: eachJob._id })
         .lean()
@@ -24,20 +23,17 @@ export const taskChartInProject = async (req: Request, res: Response) => {
       if (eachJob.is_completed) {
         console.log(eachJob.is_completed);
         completeJob++;
-      } else {
-       
+      } else { 
         incompleteJob++;
       }
       for (const eachColumn of column[0].column) {
         for (const eachTask of eachColumn.tasks) {
           let task = await task_Schema.find({ _id: eachTask }).lean();
           if (task[0].is_complete && task[0].isOverdue != true) {
-            console.log(task[0].is_complete);
             completeTask++;
           } else if (task[0].isOverdue) {
             taskOverdue++;
           } else {
-            console.log(task[0].is_complete);
             incompleteTask++;
           }
         }

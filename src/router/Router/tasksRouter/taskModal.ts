@@ -363,6 +363,7 @@ export const deleteDetailTask = async (req: Request, res: Response) => {
 
 export const uploadFileInDetailTask = async (req: Request, res: Response) => {
   let request = req.body;
+  console.log(req.file);
   if (req.file === undefined) return res.send("you must select a file.");
   const zipFileDownloadURL = `${PORT}/zipFile/dowloadZipFile/${req.file.filename}`;
   let newAttachment = new Attachment_Schema({

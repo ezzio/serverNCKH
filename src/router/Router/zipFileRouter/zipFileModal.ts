@@ -45,6 +45,7 @@ export const removeZipFile = async (req: Request, res: Response) => {
       .exec(async (error) => {
         if (!error) {
           await Attachments_Schema.deleteOne({ _id: attachmentInfo[0]._id });
+          await gfs.files.deleteOne({ filename: request.name_attachment });
           res.send({ isSuccess: true });
         } else {
           res.send({ isSuccess: false });

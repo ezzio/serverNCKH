@@ -47,7 +47,7 @@ export async function createAJob(req: Request, res: Response) {
         res.send({
           isSuccess: true,
           infoJob: {
-            idJob: Job.idJob,
+            idJob: Job._id,
             priority: Job.priority,
             is_completed: Job.is_completed,
             start_time: Job.start_time,

@@ -48,12 +48,13 @@ export async function createAJob(req: Request, res: Response) {
           isSuccess: true,
           infoJob: {
             idJob: Job._id,
+            title: Job.title,
             priority: Job.priority,
             is_completed: Job.is_completed,
             start_time: Job.start_time,
-            end_time: Job.end_time, 
+            end_time: Job.end_time,
             process: Job.process,
-            memberInJob
+            memberInJob,
           },
         });
       }

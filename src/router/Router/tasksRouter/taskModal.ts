@@ -305,11 +305,8 @@ export const completeAndUncompleteDetailTask = async (
     .lean()
     .exec();
   let detailTaskComplete = request.idDetailTask;
-  
   let listAllDetailTask = TaskInfo[0].detailTask;
-  
   for (const eachDetailTask of listAllDetailTask) {
-
     if (JSON.stringify(detailTaskComplete).indexOf(JSON.stringify(eachDetailTask)) != -1) {
       await detailTask_Schema.updateOne(
         { _id: eachDetailTask },
@@ -322,7 +319,6 @@ export const completeAndUncompleteDetailTask = async (
         }
       );
     } else {
-
       await detailTask_Schema.updateOne(
         { _id: eachDetailTask },
         {
@@ -334,6 +330,7 @@ export const completeAndUncompleteDetailTask = async (
         }
       );
     }
+    
   }
   res.send({ isSuccess: true });
 };

@@ -381,7 +381,9 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
       );
       res.send({
         isSuccess: true,
+        idDetailTask: request.idDetailTask,
         newAttachment: {
+          id: newAttachment._id,
           name: newAttachment.name,
           nameType: newAttachment.nameType,
           uploaded_at: newAttachment.uploaded_at,

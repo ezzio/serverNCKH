@@ -307,7 +307,11 @@ export const completeAndUncompleteDetailTask = async (
   let detailTaskComplete = request.idDetailTask;
   let listAllDetailTask = TaskInfo[0].detailTask;
   for (const eachDetailTask of listAllDetailTask) {
-    if (JSON.stringify(detailTaskComplete).indexOf(JSON.stringify(eachDetailTask)) != -1) {
+    if (
+      JSON.stringify(detailTaskComplete).indexOf(
+        JSON.stringify(eachDetailTask)
+      ) != -1
+    ) {
       await detailTask_Schema.updateOne(
         { _id: eachDetailTask },
         {
@@ -330,7 +334,6 @@ export const completeAndUncompleteDetailTask = async (
         }
       );
     }
-    
   }
   res.send({ isSuccess: true });
 };
@@ -376,7 +379,14 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
         { _id: request.idDetailTask },
         { $push: { attachments: newAttachment._id } }
       );
-      res.send({ isSuccess: true });
+      res.send({
+        isSuccess: true,
+        newAttachment: {
+          name: newAttachment.name,
+          nameType: newAttachment.nameType,
+          uploaded_at: newAttachment.uploaded_at,
+        },
+      });
     }
   });
 };

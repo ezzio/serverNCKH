@@ -177,9 +177,30 @@ export async function deleteTask(req: Request, res: Response) {
     )
     .exec(async (error) => {
       if (!error) {
-        // let infoTask = await task_Schema.find({ _id:request.taskId }).lean().exec((err , modal)=> {
-          
-        // })
+        await task_Schema
+          .find({ _id: request.taskId })
+          .lean()
+          .exec(async (err, modal) => {
+            let findJob = await Job_Schema.find({ _id: request.jobowner })
+              .lean()
+              .exec();
+            let createANewTimeLine = {
+              whoTrigger: request.owner,
+              action: "Delete",
+              taskEdit: {
+                idTask: modal[0]._id,
+                taskTitle: modal[0].title,
+              },
+            };
+            new timeLineTask_Schema(createANewTimeLine).save(
+              async (err, modal) => {
+                await project_Schema.updateOne(
+                  { _id: findJob[0].projectowner },
+                  { $push: { projectTimeLine: modal._id } }
+                );
+              }
+            );
+          });
         await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
           res.send({ isSuccess: true });
         });
@@ -218,6 +239,7 @@ export const editTask = async (req: Request, res: Response) => {
       .exec();
     memberInRequest.push(eachMemember[0]._id);
   }
+  // console.log(taskEdit);
   let newTaskEdit = {
     title: request.title || taskEdit[0].title,
     is_complete: request.is_complete || taskEdit[0].is_complete,
@@ -246,10 +268,34 @@ export const editTask = async (req: Request, res: Response) => {
         },
       }
     )
-    .exec((error) => {
+    .exec(async (error) => {
       if (error) {
         res.send({ isSuccess: false });
       } else {
+        await task_Schema
+          .find({ _id: request.taskId })
+          .lean()
+          .exec(async (err, modal) => {
+            let findJob = await Job_Schema.find({ _id: request.jobowner })
+              .lean()
+              .exec();
+            let createANewTimeLine = {
+              whoTrigger: request.owner,
+              action: "Update",
+              taskEdit: {
+                idTask: modal[0]._id,
+                taskTitle: modal[0].title,
+              },
+            };
+            new timeLineTask_Schema(createANewTimeLine).save(
+              async (err, modal) => {
+                await project_Schema.updateOne(
+                  { _id: findJob[0].projectowner },
+                  { $push: { projectTimeLine: modal._id } }
+                );
+              }
+            );
+          });
         res.send({ isSuccess: true });
       }
     });

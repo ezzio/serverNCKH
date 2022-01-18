@@ -177,6 +177,9 @@ export async function deleteTask(req: Request, res: Response) {
     )
     .exec(async (error) => {
       if (!error) {
+        // let infoTask = await task_Schema.find({ _id:request.taskId }).lean().exec((err , modal)=> {
+          
+        // })
         await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
           res.send({ isSuccess: true });
         });
@@ -361,6 +364,10 @@ export const completeAndUncompleteDetailTask = async (
           },
         }
       );
+      await task_Schema.updateOne(
+        { _id: request.idTask },
+        { process: request.progress }
+      );
     } else {
       await detailTask_Schema.updateOne(
         { _id: eachDetailTask },
@@ -371,6 +378,10 @@ export const completeAndUncompleteDetailTask = async (
             completed_by: userChange[0]._id,
           },
         }
+      );
+      await task_Schema.updateOne(
+        { _id: request.idTask },
+        { process: request.progress }
       );
     }
   }
@@ -434,10 +445,11 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
 
 export const changeTaskInColumn = async (req: Request, res: Response) => {
   let request = req.body;
-  let findJob = await columns_Schema.find({ jobowner: request.jobowner }).lean().exec();
-  let listTaskChangeColumn = request.TaskChange
-  if(findJob.length > 0) {
-    
-
+  let findJob = await columns_Schema
+    .find({ jobowner: request.jobowner })
+    .lean()
+    .exec();
+  let listTaskChangeColumn = request.TaskChange;
+  if (findJob.length > 0) {
   }
 };

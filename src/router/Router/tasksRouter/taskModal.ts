@@ -5,7 +5,9 @@ import User_Schema from "../../../db/schema/User_Schema";
 import task_Schema from "../../../db/schema/task_Schema";
 import { Job_Schema } from "../../../db/schema/jobs_Schema";
 import detailTask_Schema from "../../../db/schema/detailTask_Schema";
+import project_Schema from "../../../db/schema/Project_Schema";
 import Attachment_Schema from "../../../db/schema/Attachments_Schema";
+import timeLineTask_Schema from "../../../db/schema/timeLineTask_Schema";
 let PORT = process.env.PORTURL || "http://localhost:4000";
 
 export async function listTaskKanban(req: Request, res: Response) {
@@ -90,11 +92,16 @@ export async function createTask(req: Request, res: Response) {
     taskers: [] as any,
   };
   let listTaskers = request.taskers;
+  let infoTaskers: any = [];
   for (var i = 0; i < listTaskers.length; i++) {
     let eachTasker = await User_Schema.find({ user_name: listTaskers[i].name })
       .lean()
       .exec();
     infoNewTask.taskers.push(eachTasker[0]._id);
+    infoTaskers.push({
+      user_name: eachTasker[0].user_name,
+      avatar: eachTasker[0].avatar,
+    });
   }
   new task_Schema(infoNewTask).save(async (err, modal) => {
     if (err) {
@@ -107,12 +114,41 @@ export async function createTask(req: Request, res: Response) {
         },
         { $push: { "column.$.tasks": modal._id } }
       );
-      let findProject = await Job_Schema.find({ _id: request.jobowner })
+      let findJob = await Job_Schema.find({ _id: request.jobowner })
         .lean()
         .exec();
-      console.log(findProject);
+      let createANewTimeLine = {
+        whoTrigger: request.owner,
+        action: "create",
+        taskEdit: {
+          idTask: modal._id,
+          taskTitle: modal.title,
+        },
+      };
+      new timeLineTask_Schema(createANewTimeLine).save(async (err, modal) => {
+        console.log(modal);
+        console.log(findJob[0]);
 
-      res.send({ isSuccess: true });
+        await project_Schema.updateOne(
+          { _id: findJob[0].projectowner },
+          { $push: { projectTimeLine: modal._id } }
+        );
+      });
+      res.send({
+        isSuccess: true,
+        infoTask: {
+          idTask: modal._id,
+          process: infoNewTask.process,
+          is_complete: infoNewTask.is_complete,
+          priority: infoNewTask.priority,
+          description: infoNewTask.description,
+          start_time: infoNewTask.start_time,
+          decription: infoNewTask.decription,
+          end_time: infoNewTask.end_time,
+          isOverdue: infoNewTask.isOverdue,
+          infoTaskers,
+        },
+      });
     }
   });
 }
@@ -165,7 +201,7 @@ export const createDetailTask = (req: Request, res: Response) => {
         { _id: request.taskOwner },
         { $push: { detailTask: newDetailTask._id } }
       );
-      res.send({ isSuccess: true });
+      res.send({ isSuccess: true, idDetailTask: newDetailTask._id });
     } else {
       res.send({ isSuccess: false });
     }
@@ -227,6 +263,7 @@ export const listDetailTask = async (req: Request, res: Response) => {
     .exec();
   if (taskFound.length > 0) {
     let infoTask = {
+      title: taskFound[0].title,
       is_complete: taskFound[0].is_complete,
       process: taskFound[0].process,
       priority: taskFound[0].priority,

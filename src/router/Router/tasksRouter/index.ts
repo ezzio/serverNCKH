@@ -11,6 +11,7 @@ import {
   uploadFileInDetailTask,
   completeAndUncompleteDetailTask,
   updateTaskOverdue,
+  changeTaskInColumn,
 } from "./taskModal";
 const router = express.Router();
 const multer = require("multer");
@@ -35,5 +36,6 @@ router.post(
   multer({ storage }).single("my_file"),
   uploadFileInDetailTask
 );
+router.post("/changeColumnTask", changeTaskInColumn);
 
 export default router;

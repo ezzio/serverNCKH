@@ -126,9 +126,6 @@ export async function createTask(req: Request, res: Response) {
         },
       };
       new timeLineTask_Schema(createANewTimeLine).save(async (err, modal) => {
-        console.log(modal);
-        console.log(findJob[0]);
-
         await project_Schema.updateOne(
           { _id: findJob[0].projectowner },
           { $push: { projectTimeLine: modal._id } }
@@ -437,4 +434,10 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
 
 export const changeTaskInColumn = async (req: Request, res: Response) => {
   let request = req.body;
+  let findJob = await columns_Schema.find({ jobowner: request.jobowner }).lean().exec();
+  let listTaskChangeColumn = request.TaskChange
+  if(findJob.length > 0) {
+    
+
+  }
 };

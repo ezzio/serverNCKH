@@ -18,7 +18,7 @@ export async function createAJob(req: Request, res: Response) {
       is_completed: request.is_completed || false,
       start_time: moment(request.start_time).format(dateFormat) || Date.now(),
       end_time: moment(request.end_time).format(dateFormat) || Date.now() + 1,
-      process: request.process || "0%",
+      process: request.process || 0,
       members: [],
     });
     if (request.members) {

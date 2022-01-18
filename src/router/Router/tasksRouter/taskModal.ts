@@ -107,6 +107,10 @@ export async function createTask(req: Request, res: Response) {
         },
         { $push: { "column.$.tasks": modal._id } }
       );
+      let findProject = await Job_Schema.find({ _id: request.jobowner })
+        .lean()
+        .exec();
+      console.log(findProject);
 
       res.send({ isSuccess: true });
     }
@@ -239,18 +243,7 @@ export const listDetailTask = async (req: Request, res: Response) => {
         .find()
         .exec();
       let attachmentsOfDetailTask: any[] = [];
-      for (const eachMemberInTask of taskFound[0].taskers) {
-        let eachMember = await User_Schema.find({ _id: eachMemberInTask })
-          .lean()
-          .exec();
-        if (eachMember.length > 0) {
-          memberInTask.push({
-            display_name: eachMember[0].display_name,
-            user_name: eachMember[0].user_name,
-            avatar: eachMember[0].avatar,
-          });
-        }
-      }
+
       for (const eachAttachment of detailTask[0].attachments) {
         let each = await Attachment_Schema.find({ _id: eachAttachment })
           .lean()
@@ -271,6 +264,18 @@ export const listDetailTask = async (req: Request, res: Response) => {
         assignOn: detailTask[0].assignOn,
         attachmentsOfDetailTask: attachmentsOfDetailTask,
       });
+    }
+    for (const eachMemberInTask of taskFound[0].taskers) {
+      let eachMember = await User_Schema.find({ _id: eachMemberInTask })
+        .lean()
+        .exec();
+      if (eachMember.length > 0) {
+        memberInTask.push({
+          display_name: eachMember[0].display_name,
+          user_name: eachMember[0].user_name,
+          avatar: eachMember[0].avatar,
+        });
+      }
     }
     res.send({ isSuccess: true, infoTask, infoAllDetailTask, memberInTask });
   } else {
@@ -391,4 +396,8 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
       });
     }
   });
+};
+
+export const changeTaskInColumn = async (req: Request, res: Response) => {
+  let request = req.body;
 };

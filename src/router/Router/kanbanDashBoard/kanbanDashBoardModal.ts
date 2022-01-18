@@ -23,7 +23,7 @@ export const taskChartInProject = async (req: Request, res: Response) => {
       if (eachJob.is_completed) {
         console.log(eachJob.is_completed);
         completeJob++;
-      } else { 
+      } else {
         incompleteJob++;
       }
       for (const eachColumn of column[0].column) {

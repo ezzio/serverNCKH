@@ -168,7 +168,6 @@ export async function editJob(req: Request, res: Response) {
           end_time: edit_Job.end_time,
           priority: edit_Job.priority,
           is_completed: edit_Job.is_completed,
-
           members: edit_Job.members,
         },
       }

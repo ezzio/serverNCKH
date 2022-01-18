@@ -14,6 +14,7 @@ const ProjectSchema = new Schema({
     },
   ],
   owners: { type: Schema.Types.ObjectId, ref: "User" },
+  projectTimeLine: [{ type: Schema.Types.ObjectId, ref: "timeLineSchema" }],
 });
 
 // const DonHang = ;

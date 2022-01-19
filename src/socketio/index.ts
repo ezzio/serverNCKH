@@ -23,8 +23,7 @@ export default (server: express.Express) => {
     });
 
     socket.on("sendMessage", (message: any) => {
-      // io.to(message.room_id).emit("newMessages", message);
-      console.log(message);
+      socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
     socket.on("disconnect", async () => {
       let index = await userInRoom.findIndex(

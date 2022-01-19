@@ -6,4 +6,5 @@ export interface projectSchemaInterface extends Document {
   process: string;
   members: [{ idMember: ObjectId; tag: string }];
   owners: ObjectId[];
+  projectTimeLine: ObjectId[];
 }

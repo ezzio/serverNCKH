@@ -492,10 +492,23 @@ export const uploadFileInDetailTask = async (req: Request, res: Response) => {
 export const changeTaskInColumn = async (req: Request, res: Response) => {
   let request = req.body;
   let findJob = await columns_Schema
-    .find({ jobowner: request.jobowner })
+    .find({ jobowner: request.idBoard })
     .lean()
     .exec();
-  let listTaskChangeColumn = request.TaskChange;
+  let columns = request.columns;
   if (findJob.length > 0) {
+    for (const eachColumn of columns) {
+      let eachColumnTask = eachColumn.eachColumnTask.map((idTasktemp:any)=> idTasktemp.id)
+      await columns_Schema.updateOne(
+        {
+          jobowner: request.idBoard,
+          "column.id_column": eachColumn.id_column,
+        },
+        { $set: { "column.$.tasks": eachColumnTask } }
+      );
+    }
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
   }
 };

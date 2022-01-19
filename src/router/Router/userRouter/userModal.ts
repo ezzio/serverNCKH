@@ -25,12 +25,19 @@ export async function getUserInfo(req: Request, res: Response) {
     });
   }
   /// find project of User
-  let projectOfUser = await project_Schema.find({
-    members: { $in: request.owner },
-  });
-  for (let project of projectOfUser) {
+  let projectUserJoin = await project_Schema
+    .find({
+      "members.idMember": { $in: request.owner },
+    })
+    .lean()
+    .exec();
+  for (let eachIdProject of projectUserJoin) {
+    let project = await project_Schema
+      .find({ _id: eachIdProject })
+      .lean()
+      .exec();
     let memberInRoom = [];
-    for (let eachMember of project.members) {
+    for (let eachMember of project[0].members) {
       let member = await user_Schema
         .find({ _id: eachMember.idMember })
         .find()
@@ -43,8 +50,8 @@ export async function getUserInfo(req: Request, res: Response) {
       }
     }
     allProject.push({
-      idProject: project._id,
-      title: project.name,
+      idProject: project[0]._id,
+      title: project[0].name,
       members: memberInRoom,
     });
   }
@@ -64,7 +71,10 @@ export async function getUserInfo(req: Request, res: Response) {
       end_time: eachTask.end_time,
     });
   }
-  await result.push({ allProject, allTask });
+  await result.push({
+    allProject,
+    allTask,
+  });
   res.send(result);
 }
 

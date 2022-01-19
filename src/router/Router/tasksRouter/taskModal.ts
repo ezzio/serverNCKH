@@ -498,7 +498,9 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
   let columns = request.columns;
   if (findJob.length > 0) {
     for (const eachColumn of columns) {
-      let eachColumnTask = eachColumn.eachColumnTask.map((idTasktemp:any)=> idTasktemp.id)
+      let eachColumnTask = eachColumn.eachColumnTask.map(
+        (idTasktemp: any) => idTasktemp.id
+      );
       await columns_Schema.updateOne(
         {
           jobowner: request.idBoard,
@@ -510,5 +512,56 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
     res.send({ isSuccess: true });
   } else {
     res.send({ isSuccess: false });
+  }
+};
+
+export const checkIsCompleteTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let findTask = await task_Schema.find({ _id: request.idTask }).lean().exec();
+  if (findTask.length > 0) {
+    await task_Schema
+      .updateOne(
+        { _id: request.idTask },
+        { $set: { is_complete: request.is_complete } }
+      )
+      .exec(async (error) => {
+        if (!error) {
+          if (request.is_complete) {
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 2,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 3,
+              },
+              { $push: { "column.$.tasks": request.idTask } }
+            );
+            res.send({ isSuccess: true });
+          } else {
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 3,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 2,
+              },
+              { $push: { "column.$.tasks": request.idTask } }
+            );
+            res.send({ isSuccess: true });
+          }
+        } else {
+          res.send({ isSuccess: false });
+        }
+      });
   }
 };

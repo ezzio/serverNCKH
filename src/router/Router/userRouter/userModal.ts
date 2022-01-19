@@ -26,7 +26,7 @@ export async function getUserInfo(req: Request, res: Response) {
   }
   /// find project of User
   let projectOfUser = await project_Schema.find({
-    owners: request.owner,
+    members: { $in: request.owner },
   });
   for (let project of projectOfUser) {
     let memberInRoom = [];

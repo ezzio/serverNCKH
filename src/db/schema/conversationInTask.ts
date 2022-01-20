@@ -5,7 +5,7 @@ const conversationInTask = new Schema({
   textChat: [
     {
       displayName: { type: String },
-      line_text: [{ type: String }],
+      line_text: { type: String },
       user_name: { type: String },
       sendAt: { type: Date, default: Date.now },
       type: { type: String },

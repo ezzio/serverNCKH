@@ -31,7 +31,7 @@ export default (server: express.Express, app: any) => {
           $push: {
             textChat: {
               displayName: message.display_name,
-              line_text: [{ ...message.message }],
+              line_text: message.message ,
               user_name: message.user_name,
               type: "text",
             },

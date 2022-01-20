@@ -11,7 +11,6 @@ export default (server: express.Express, app: any) => {
 
   app.set("userInRoom", userInRoom);
   io.on("connection", (socket: any) => {
-    app.set("socketio", socket);
     socket.on("chat-connectToRoom", (data: any) => {
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {

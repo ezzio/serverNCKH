@@ -8,6 +8,7 @@ import detailTask_Schema from "../../../db/schema/detailTask_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
 import Attachment_Schema from "../../../db/schema/Attachments_Schema";
 import timeLineTask_Schema from "../../../db/schema/timeLineTask_Schema";
+import conversationInTask from "../../../db/schema/conversationInTask";
 let PORT = process.env.PORTURL || "http://localhost:4000";
 
 export async function listTaskKanban(req: Request, res: Response) {
@@ -131,6 +132,7 @@ export async function createTask(req: Request, res: Response) {
           { $push: { projectTimeLine: modal._id } }
         );
       });
+      new conversationInTask({idTask: modal._id }).save()
       res.send({
         isSuccess: true,
         infoTask: {

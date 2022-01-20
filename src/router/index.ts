@@ -8,6 +8,7 @@ import signInRouter from "./Router/signInRouter";
 import tasksRouter from "./Router/tasksRouter";
 import kanbanRouter from "./Router/kanbanDashBoard";
 import zipRouter from "./Router/zipFileRouter";
+import chatOnTask from "./Router/chatOnTask";
 export default (app: express.Express) => {
   app.use("/login", signInRouter);
   app.use("/register", signUpRouter);
@@ -18,4 +19,5 @@ export default (app: express.Express) => {
   app.use("/project", projectRouter);
   app.use("/zipFile", zipRouter);
   app.use("/kanban", kanbanRouter);
+  app.use("/ConversationTask", chatOnTask);
 };

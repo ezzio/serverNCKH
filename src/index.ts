@@ -18,7 +18,7 @@ async function main() {
   const PORT = process.env.PORT || 4000;
 
   server.listen(PORT, () => console.log("server is running at port " + PORT));
-  socket(server);
+  socket(server, app);
   routers(app);
 }
 

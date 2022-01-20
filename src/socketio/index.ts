@@ -1,15 +1,18 @@
 import * as express from "express";
+import conversationInTask_Schema from "../db/schema/conversationInTask";
 import videoCall from "./functionSocket/videoCall";
 let userInRoom: any[] = [];
-export default (server: express.Express) => {
+export default (server: express.Express, app: any) => {
   const io = require("socket.io")(server, {
     cors: {
       origin: "*",
     },
   });
+
+  app.set("userInRoom", userInRoom);
   io.on("connection", (socket: any) => {
+    app.set("socketio", socket);
     socket.on("chat-connectToRoom", (data: any) => {
-      console.log(data);
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
         userInRoom.push({
@@ -22,7 +25,18 @@ export default (server: express.Express) => {
       socket.join(data.room_id);
     });
 
-    socket.on("sendMessage", (message: any) => {
+    socket.on("sendMessage", async (message: any) => {
+      await conversationInTask_Schema.updateOne(
+        { _id: message.room_id },
+        {
+          $push: {
+            displayName: message.display_name,
+            line_text: [{ ...message.message }],
+            user_name: message.user_name,
+            type: "text",
+          },
+        }
+      );
       socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
     socket.on("disconnect", async () => {

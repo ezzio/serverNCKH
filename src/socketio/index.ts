@@ -29,10 +29,12 @@ export default (server: express.Express, app: any) => {
         { _id: message.room_id },
         {
           $push: {
-            displayName: message.display_name,
-            line_text: [{ ...message.message }],
-            user_name: message.user_name,
-            type: "text",
+            textChat: {
+              displayName: message.display_name,
+              line_text: [{ ...message.message }],
+              user_name: message.user_name,
+              type: "text",
+            },
           },
         }
       );

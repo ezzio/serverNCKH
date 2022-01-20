@@ -26,7 +26,7 @@ export default (server: express.Express, app: any) => {
 
     socket.on("sendMessage", async (message: any) => {
       await conversationInTask_Schema.updateOne(
-        { _id: message.room_id },
+        { idTask: message.room_id },
         {
           $push: {
             textChat: {

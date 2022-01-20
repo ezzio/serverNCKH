@@ -25,17 +25,17 @@ export default (server: express.Express, app: any) => {
     });
 
     socket.on("sendMessage", async (message: any) => {
-      // await conversationInTask_Schema.updateOne(
-      //   { _id: message.room_id },
-      //   {
-      //     $push: {
-      //       displayName: message.display_name,
-      //       line_text: [{ ...message.message }],
-      //       user_name: message.user_name,
-      //       type: "text",
-      //     },
-      //   }
-      // );
+      await conversationInTask_Schema.updateOne(
+        { _id: message.room_id },
+        {
+          $push: {
+            displayName: message.display_name,
+            line_text: [{ ...message.message }],
+            user_name: message.user_name,
+            type: "text",
+          },
+        }
+      );
       socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
     socket.on("disconnect", async () => {

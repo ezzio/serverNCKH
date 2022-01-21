@@ -587,6 +587,7 @@ export const listMessageInDetailTask = async (req: Request, res: Response) => {
       displayName: eachTextChat.displayName,
       line_text: eachTextChat.line_text,
       user_name: eachTextChat.user_name,
+      avatar: eachTextChat.avatar,
       type: eachTextChat.text,
       sendAt: eachTextChat.sendAt,
     })

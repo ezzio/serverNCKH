@@ -361,27 +361,13 @@ export const listDetailTask = async (req: Request, res: Response) => {
         });
       }
     }
-    let conversationInTask = await conversationInTask_Schema
-      .find({
-        idTask: request.taskOwner,
-      })
-      .lean()
-      .exec();
-    let resultConversation = conversationInTask[0].textChat.map(
-      (eachTextChat: any) => ({
-        displayName: eachTextChat.displayName,
-        line_text: eachTextChat.line_text,
-        user_name: eachTextChat.user_name,
-        type: eachTextChat.text,
-        sendAt: eachTextChat.sendAt,
-      })
-    );
+
     res.send({
       isSuccess: true,
       infoTask,
       infoAllDetailTask,
       memberInTask,
-      textChatInTask: resultConversation,
+      // textChatInTask: resultConversation,
     });
   } else {
     res.send({ isSuccess: false });
@@ -586,4 +572,24 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
         }
       });
   }
+};
+
+export const listMessageInDetailTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let conversationInTask = await conversationInTask_Schema
+    .find({
+      idTask: request.taskOwner,
+    })
+    .lean()
+    .exec();
+  let resultConversation = conversationInTask[0].textChat.map(
+    (eachTextChat: any) => ({
+      displayName: eachTextChat.displayName,
+      line_text: eachTextChat.line_text,
+      user_name: eachTextChat.user_name,
+      type: eachTextChat.text,
+      sendAt: eachTextChat.sendAt,
+    })
+  );
+  res.send({ isSuccess: true, resultConversation });
 };

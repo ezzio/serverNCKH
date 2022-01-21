@@ -7,6 +7,7 @@ const conversationInTask = new Schema({
       displayName: { type: String },
       line_text: { type: String },
       user_name: { type: String },
+      avatar: { type: String },
       sendAt: { type: Date, default: Date.now },
       type: { type: String },
     },

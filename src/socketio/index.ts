@@ -25,6 +25,7 @@ export default (server: express.Express, app: any) => {
     });
 
     socket.on("sendMessage", async (message: any) => {
+      console.log(message);
       await conversationInTask_Schema.updateOne(
         { idTask: message.room_id },
         {
@@ -33,6 +34,7 @@ export default (server: express.Express, app: any) => {
               displayName: message.display_name,
               line_text: message.message ,
               user_name: message.user_name,
+              avatar: message.avatarURL,
               type: "text",
             },
           },

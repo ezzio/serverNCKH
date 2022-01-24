@@ -69,7 +69,7 @@ export async function ListJobs(req: Request, res: Response) {
   let memberInProject: any[] = [];
   let ListJobsofUser: any[] = [];
   if (request.projectowner) {
-
+   
     // update project progess
     let jobInProject = await Job_Schema.find({ jobowner: request.projectowner })
       .lean()
@@ -80,10 +80,11 @@ export async function ListJobs(req: Request, res: Response) {
     })
       .lean()
       .exec();
-    await project_Schema.updateOne(
-      { _id: request.projectowner },
-      { progress: (findJobIsComplete.length / jobInProject.length) * 100 }
-    );
+      console.log((findJobIsComplete.length / jobInProject.length) * 100);
+    // await project_Schema.updateOne(
+    //   { _id: request.projectowner },
+    //   { progress: (findJobIsComplete.length / jobInProject.length) * 100 }
+    // );
 
     // 
     let listJob = await Job_Schema.find({ projectowner: request.projectowner })

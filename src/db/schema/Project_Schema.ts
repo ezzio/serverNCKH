@@ -6,7 +6,7 @@ const ProjectSchema = new Schema({
   createAt: { type: Date, default: Date.now },
   avatarProject: { type: String },
   is_complete: { type: Boolean },
-  process: { type: String },
+  progress: { type: Number },
   members: [
     {
       idMember: { type: Schema.Types.ObjectId, ref: "User" },

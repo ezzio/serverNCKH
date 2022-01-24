@@ -2,7 +2,7 @@ import { model, Schema, Document, ObjectId } from "mongoose";
 
 export default interface taskSchemaInterface extends Document {
   title: string,
-  process: string,
+  progress: number,
   level: string,
   decription: string,
   is_complete: boolean,

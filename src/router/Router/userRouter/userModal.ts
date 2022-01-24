@@ -64,7 +64,7 @@ export async function getUserInfo(req: Request, res: Response) {
   for (const eachTask of findAllTaskuserJoin) {
     allTask.push({
       title: eachTask.title,
-      process: eachTask.process,
+      progress: eachTask.progress,
       is_complete: eachTask.is_complete,
       priority: eachTask.priority,
       start_time: eachTask.start_time,

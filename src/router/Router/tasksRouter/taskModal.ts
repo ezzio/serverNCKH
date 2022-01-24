@@ -57,7 +57,7 @@ export async function listTaskKanban(req: Request, res: Response) {
           description: infoTask[0].description,
           isOverdue: infoTask[0].isOverdue,
           level: infoTask[0].level,
-          process: infoTask[0].process,
+          progress: infoTask[0].progress,
           priority: infoTask[0].priority,
           start_time: infoTask[0].start_time,
           end_time: infoTask[0].end_time,
@@ -82,7 +82,7 @@ export async function createTask(req: Request, res: Response) {
   let request = req.body;
   let infoNewTask = {
     title: request.title,
-    process: request.process,
+    progress: request.progress,
     is_complete: false,
     priority: request.priority,
     description: request.description,
@@ -137,7 +137,7 @@ export async function createTask(req: Request, res: Response) {
         isSuccess: true,
         infoTask: {
           idTask: modal._id,
-          process: infoNewTask.process,
+          progress: infoNewTask.progress,
           is_complete: infoNewTask.is_complete,
           priority: infoNewTask.priority,
           description: infoNewTask.description,
@@ -245,7 +245,7 @@ export const editTask = async (req: Request, res: Response) => {
   let newTaskEdit = {
     title: request.title || taskEdit[0].title,
     is_complete: request.is_complete || taskEdit[0].is_complete,
-    process: request.process || taskEdit[0].process,
+    progress: request.progress || taskEdit[0].progress,
     priority: request.priority || taskEdit[0].priority,
     start_time: request.start_time || taskEdit[0].start_time,
     description: request.description || taskEdit[0].description,
@@ -260,7 +260,7 @@ export const editTask = async (req: Request, res: Response) => {
         $set: {
           title: newTaskEdit.title,
           is_complete: newTaskEdit.is_complete,
-          process: newTaskEdit.process,
+          progress: newTaskEdit.progress,
           priority: newTaskEdit.priority,
           start_time: newTaskEdit.start_time,
           description: newTaskEdit.description,
@@ -313,7 +313,7 @@ export const listDetailTask = async (req: Request, res: Response) => {
     let infoTask = {
       title: taskFound[0].title,
       is_complete: taskFound[0].is_complete,
-      process: taskFound[0].process,
+      progress: taskFound[0].progress,
       priority: taskFound[0].priority,
       start_time: taskFound[0].start_time,
       end_time: taskFound[0].start_time,
@@ -420,7 +420,7 @@ export const completeAndUncompleteDetailTask = async (
       );
       await task_Schema.updateOne(
         { _id: request.idTask },
-        { process: request.progress }
+        { progress: request.progress }
       );
     } else {
       await detailTask_Schema.updateOne(
@@ -435,10 +435,18 @@ export const completeAndUncompleteDetailTask = async (
       );
       await task_Schema.updateOne(
         { _id: request.idTask },
-        { process: request.progress }
+        { progress: request.progress }
       );
     }
   }
+  let TaskInfoIsComplete = await task_Schema
+    .find({ _id: request.idTask, is_complete: true })
+    .lean()
+    .exec();
+  Job_Schema.updateOne(
+    { _id: request.idBoard },
+    { $set: { progress: (TaskInfoIsComplete.length / TaskInfo.length) * 100 } }
+  );
   res.send({ isSuccess: true });
 };
 

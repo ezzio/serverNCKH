@@ -18,7 +18,7 @@ export async function createAJob(req: Request, res: Response) {
       is_completed: request.is_completed || false,
       start_time: moment(request.start_time).format(dateFormat) || Date.now(),
       end_time: moment(request.end_time).format(dateFormat) || Date.now() + 1,
-      process: request.process || 0,
+      progess: request.progess || 0,
       members: [],
     });
     if (request.members) {
@@ -53,7 +53,7 @@ export async function createAJob(req: Request, res: Response) {
             is_completed: Job.is_completed,
             start_time: Job.start_time,
             end_time: Job.end_time,
-            process: Job.process,
+            progess: Job.progess,
             memberInJob,
           },
         });
@@ -69,6 +69,23 @@ export async function ListJobs(req: Request, res: Response) {
   let memberInProject: any[] = [];
   let ListJobsofUser: any[] = [];
   if (request.projectowner) {
+
+    // update project progess
+    let jobInProject = await Job_Schema.find({ jobowner: request.projectowner })
+      .lean()
+      .exec();
+    let findJobIsComplete = await Job_Schema.find({
+      jobowner: request.projectowner,
+      is_completed: true,
+    })
+      .lean()
+      .exec();
+    await project_Schema.updateOne(
+      { _id: request.projectowner },
+      { progress: (findJobIsComplete.length / jobInProject.length) * 100 }
+    );
+
+    // 
     let listJob = await Job_Schema.find({ projectowner: request.projectowner })
       .lean()
       .exec();
@@ -90,7 +107,7 @@ export async function ListJobs(req: Request, res: Response) {
             start_time: eachJob.start_time,
             end_time: eachJob.end_time,
             is_completed: eachJob.is_completed,
-            process: eachJob.process,
+            progess: eachJob.progess,
             priority: eachJob.priority,
           });
         } else {
@@ -101,7 +118,7 @@ export async function ListJobs(req: Request, res: Response) {
             start_time: eachJob.start_time,
             end_time: eachJob.end_time,
             is_completed: eachJob.is_completed,
-            process: eachJob.process,
+            progess: eachJob.progess,
             priority: eachJob.priority,
           });
         }
@@ -202,3 +219,21 @@ export async function deleteJob(req: Request, res: Response) {
     }
   );
 }
+
+export const completeAndUncompleteJob = async (req: Request, res: Response) => {
+  let request = req.body;
+  let jobInProject = await Job_Schema.find({ jobowner: request.idProject })
+    .lean()
+    .exec();
+  let findJobIsComplete = await Job_Schema.find({
+    jobowner: request.idProject,
+    is_completed: true,
+  })
+    .lean()
+    .exec();
+  await project_Schema.updateOne(
+    { _id: request.idProject },
+    { progress: (findJobIsComplete.length / jobInProject.length) * 100 }
+  );
+  res.send({ isSuccess: true });
+};

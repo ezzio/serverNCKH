@@ -3,7 +3,7 @@ export interface projectSchemaInterface extends Document {
   name: string;
   createAt: Date;
   is_complete: boolean;
-  process: string;
+  progress: Number;
   members: [{ idMember: ObjectId; tag: string }];
   owners: ObjectId[];
   projectTimeLine: ObjectId[];

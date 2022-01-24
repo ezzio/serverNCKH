@@ -22,16 +22,6 @@ export async function listTaskKanban(req: Request, res: Response) {
     .exec();
   // tim kiem job
   let findJob = await Job_Schema.find({ _id: request.jobowner }).lean().exec();
-
-  // tim kiem nhung task da is compltet
-  // let findTaskIsComplete = await task_Schema
-  //   .find({
-  //     idJobOwner: request.jobOwner,
-  //     is_complete: true,
-  //   })
-  //   .lean()
-  //   .exec();
-
   let column = listColumn[0]?.column;
   if (findJob.length > 0) {
     for (const eachMemberInJob of findJob[0].members) {
@@ -61,6 +51,12 @@ export async function listTaskKanban(req: Request, res: Response) {
             avatar: eachMember[0].avatar,
           });
         }
+        let allDetailTaskInTask = infoTask[0].detailTask.length;
+        let allCompletedTaskInTask = await conversationInTask_Schema
+          .find({ idTask: i })
+          .lean()
+          .exec();
+
         eachColumnTask.push({
           id: infoTask[0]._id,
           title: infoTask[0].title,
@@ -69,6 +65,8 @@ export async function listTaskKanban(req: Request, res: Response) {
           description: infoTask[0].description,
           isOverdue: infoTask[0].isOverdue,
           level: infoTask[0].level,
+          totalDetilTask: allDetailTaskInTask,
+          totalConversation: allCompletedTaskInTask[0].textChat.length,
           progress: infoTask[0].progress,
           priority: infoTask[0].priority,
           start_time: infoTask[0].start_time,

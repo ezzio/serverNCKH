@@ -15,11 +15,23 @@ export async function listTaskKanban(req: Request, res: Response) {
   let request = req.body;
   let result: any[] = [];
   let memberInJob: any[] = [];
+
   let listColumn = await columns_Schema
     .find({ jobowner: request.jobowner })
     .lean()
     .exec();
+  // tim kiem job
   let findJob = await Job_Schema.find({ _id: request.jobowner }).lean().exec();
+
+  // tim kiem nhung task da is compltet
+  // let findTaskIsComplete = await task_Schema
+  //   .find({
+  //     idJobOwner: request.jobOwner,
+  //     is_complete: true,
+  //   })
+  //   .lean()
+  //   .exec();
+
   let column = listColumn[0]?.column;
   if (findJob.length > 0) {
     for (const eachMemberInJob of findJob[0].members) {
@@ -87,6 +99,7 @@ export async function createTask(req: Request, res: Response) {
     priority: request.priority,
     description: request.description,
     start_time: request.start_time,
+    idJobOwner: request.idBoard,
     decription: request.decription,
     end_time: request.end_time,
     isOverdue: false,
@@ -440,14 +453,7 @@ export const completeAndUncompleteDetailTask = async (
       );
     }
   }
-  let TaskInfoIsComplete = await task_Schema
-    .find({ _id: request.idTask, is_complete: true })
-    .lean()
-    .exec();
-  Job_Schema.updateOne(
-    { _id: request.idBoard },
-    { $set: { progress: (TaskInfoIsComplete.length / TaskInfo.length) * 100 } }
-  );
+
   res.send({ isSuccess: true });
 };
 
@@ -574,6 +580,26 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
               },
               { $push: { "column.$.tasks": request.idTask } }
             );
+
+            let allTaskInfoIsComplete = await task_Schema
+              .find({ idJobOwner: request.idBoard, is_complete: true })
+              .lean()
+              .exec();
+            let allTaskInfo = await task_Schema
+              .find({ idJobOwner: request.idBoard })
+              .lean()
+              .exec();
+
+            Job_Schema.updateOne(
+              { _id: request.idBoard },
+              {
+                $set: {
+                  progress:
+                    (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+                },
+              }
+            );
+
             res.send({ isSuccess: true });
           }
         } else {

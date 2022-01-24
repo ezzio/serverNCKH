@@ -103,11 +103,14 @@ export async function ListJobs(req: Request, res: Response) {
               avatar: eachmember[0].avatar,
             });
           });
+
+          console.log(eachJob);
           ListJobsofUser.push({
             _id: eachJob._id,
             title: eachJob.title,
             members: infoMembers,
             start_time: eachJob.start_time,
+            progress: eachJob.progress,
             end_time: eachJob.end_time,
             is_completed: eachJob.is_completed,
             progess: eachJob.progess,
@@ -120,6 +123,7 @@ export async function ListJobs(req: Request, res: Response) {
             members: [],
             start_time: eachJob.start_time,
             end_time: eachJob.end_time,
+            progress: eachJob.progress,
             is_completed: eachJob.is_completed,
             progess: eachJob.progess,
             priority: eachJob.priority,

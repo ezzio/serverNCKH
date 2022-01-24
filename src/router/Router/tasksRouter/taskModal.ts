@@ -137,6 +137,7 @@ export async function createTask(req: Request, res: Response) {
         isSuccess: true,
         infoTask: {
           idTask: modal._id,
+          title: modal.title,
           progress: infoNewTask.progress,
           is_complete: infoNewTask.is_complete,
           priority: infoNewTask.priority,

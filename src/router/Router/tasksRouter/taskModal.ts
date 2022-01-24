@@ -592,11 +592,11 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
             console.log(
               (allTaskInfoIsComplete.length / allTaskInfo.length) * 100
             );
-            Job_Schema.updateOne(
+            await Job_Schema.updateOne(
               { _id: request.idBoard },
               {
                 $set: {
-                  progress:
+                  progess:
                     (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
                 },
               }
@@ -630,4 +630,25 @@ export const listMessageInDetailTask = async (req: Request, res: Response) => {
     })
   );
   res.send({ isSuccess: true, resultConversation });
+};
+
+export const updateProgressTask = async (req: Request, res: Response) => {
+  let request = req.body;
+  let allTaskInfoIsComplete = await task_Schema
+    .find({ idJobOwner: request.idBoard, is_complete: true })
+    .lean()
+    .exec();
+  let allTaskInfo = await task_Schema
+    .find({ idJobOwner: request.idBoard })
+    .lean()
+    .exec();
+  // console.log((allTaskInfoIsComplete.length / allTaskInfo.length) * 100);
+  Job_Schema.updateOne(
+    { _id: request.idBoard }
+    // {
+    //   $set: {
+    //     progess: (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+    //   },
+    // }
+  );
 };

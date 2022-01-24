@@ -589,7 +589,9 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
               .find({ idJobOwner: request.idBoard })
               .lean()
               .exec();
-
+            console.log(
+              (allTaskInfoIsComplete.length / allTaskInfo.length) * 100
+            );
             Job_Schema.updateOne(
               { _id: request.idBoard },
               {

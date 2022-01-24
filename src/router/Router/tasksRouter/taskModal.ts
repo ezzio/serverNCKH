@@ -564,6 +564,28 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
               },
               { $push: { "column.$.tasks": request.idTask } }
             );
+
+            let allTaskInfoIsComplete = await task_Schema
+              .find({ idJobOwner: request.idBoard, is_complete: true })
+              .lean()
+              .exec();
+            let allTaskInfo = await task_Schema
+              .find({ idJobOwner: request.idBoard })
+              .lean()
+              .exec();
+            console.log(
+              (allTaskInfoIsComplete.length / allTaskInfo.length) * 100
+            );
+            await Job_Schema.updateOne(
+              { _id: request.idBoard },
+              {
+                $set: {
+                  progess:
+                    (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+                },
+              }
+            );
+
             res.send({ isSuccess: true });
           } else {
             await columns_Schema.updateOne(
@@ -643,12 +665,12 @@ export const updateProgressTask = async (req: Request, res: Response) => {
     .lean()
     .exec();
   // console.log((allTaskInfoIsComplete.length / allTaskInfo.length) * 100);
-  Job_Schema.updateOne(
-    { _id: request.idBoard }
-    // {
-    //   $set: {
-    //     progess: (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
-    //   },
-    // }
-  );
+  // Job_Schema.updateOne(
+  //   { _id: request.idBoard },
+  //   {
+  //     $set: {
+  //       progess: (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+  //     },
+  //   }
+  // );
 };

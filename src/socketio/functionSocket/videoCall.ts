@@ -25,9 +25,7 @@ export default (socket: any, users: any) => {
       users[index].socketId = socket.id;
       users[index].peerId = data.peerId;
     }
-    // console.log(users);
     socket.to(data.room_id).emit("SomeOneJoin", users);
-
     socket.to(data.room_id).emit("newUserJoin", {
       RoomJoin: data.room_id,
       message: data.username + " Vừa Join vào room",

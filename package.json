@@ -8,8 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --optimize_for_size --max_old_space_size=460 build/index",
-    "build": "tsc"
+    "start": "nodemon build/index",
+    "tsc": "tsc"
   },
   "keywords": [],
   "author": "",

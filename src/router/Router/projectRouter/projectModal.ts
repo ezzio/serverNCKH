@@ -242,3 +242,62 @@ export const listAllAttachmentInProject = async (
     res.send({ isSuccess: false });
   }
 };
+
+export const renameProject = async (req: Request, res: Response) => {
+  let request = req.body;
+  await project_Schema
+    .updateOne(
+      {
+        _id: request.idProject,
+        owners: request.idUser,
+      },
+      { $set: { name: request.newNameProject } }
+    )
+    .exec((error) => {
+      if (!error) {
+        res.send({ isSuccess: true });
+      } else {
+        res.send({ isSuccess: false });
+      }
+    });
+};
+
+export const transferOwnerShipProject = async (req: Request, res: Response) => {
+  let request = req.body;
+  let userNameId = await User_Schema.find({ user_name: request.user_name })
+    .lean()
+    .exec();
+  await project_Schema
+    .updateOne(
+      { _id: request.idProject, owners: request.idUser },
+      { $set: { owners: userNameId[0]._id } }
+    )
+    .exec((error) => {
+      if (!error) {
+        res.send({ isSuccess: true });
+      } else {
+        res.send({ isSuccess: false });
+      }
+    });
+};
+
+export const listInfoProjectForOwner = async (req: Request, res: Response) => {
+  let request = req.body;
+  let infoProject = await project_Schema
+    .find({ _id: request.idProject, owners: request.idUser })
+    .lean()
+    .exec();
+  res.send({
+    name: infoProject[0].name,
+    isSuccess: true,
+  });
+};
+
+export const removeProjectOwner = async (req: Request, res: Response) => {
+  let request = req.body;
+  // await project_Schema.deleteOne({ _id: request.idProject }).exec();
+  let infoProject = await project_Schema.find({ _id: request.idProject }).lean().exec()
+  
+
+
+};

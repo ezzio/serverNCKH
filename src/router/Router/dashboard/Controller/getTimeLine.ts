@@ -1,6 +1,7 @@
 import ProjectSchema from '../../../../db/schema/Project_Schema';
 import timeLineTaskSchema from '../../../../db/schema/timeLineTask_Schema';
 import User from '../../../../db/schema/User_Schema';
+import task from '../../../../db/schema/task_Schema';
 
 import { Request, Response } from 'express';
 
@@ -31,13 +32,23 @@ export async function getTimeLine(req: Request, res: Response) {
           .exec();
 
         if (whoTrigger) {
+          let infoTask = await task
+            .findById({
+              _id: timeLineBody[index].taskEdit.idTask,
+            })
+            .lean()
+            .exec();
           let temp = {
             username: whoTrigger.user_name,
             display_name: whoTrigger?.display_name,
+            avatar: whoTrigger?.avatar,
             action: timeLineBody[index].action,
+            idTask: timeLineBody[index].taskEdit.idTask,
+            job: infoTask,
             taskTitle: timeLineBody[index].taskEdit.taskTitle,
             createAt: timeLineBody[index].createAt,
           };
+          console.log(temp);
           result.push(temp);
         }
       }

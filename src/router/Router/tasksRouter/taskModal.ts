@@ -128,7 +128,6 @@ export async function createTask(req: Request, res: Response) {
         .find({ idJobOwner: request.idBoard })
         .lean()
         .exec();
-      console.log((allTaskInfoIsComplete.length / allTaskInfo.length) * 100);
       await Job_Schema.updateOne(
         { _id: request.idBoard },
         {
@@ -140,12 +139,12 @@ export async function createTask(req: Request, res: Response) {
 
       await columns_Schema.updateOne(
         {
-          jobowner: request.jobowner,
+          jobowner: request.idBoard,
           "column.id_column": 0,
         },
         { $push: { "column.$.tasks": modal._id } }
       );
-      let findJob = await Job_Schema.find({ _id: request.jobowner })
+      let findJob = await Job_Schema.find({ _id: request.idBoard })
         .lean()
         .exec();
       let createANewTimeLine = {

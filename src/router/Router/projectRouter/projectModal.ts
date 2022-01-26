@@ -272,8 +272,34 @@ export const transferOwnerShipProject = async (req: Request, res: Response) => {
       { _id: request.idProject, owners: request.idUser },
       { $set: { owners: userNameId[0]._id } }
     )
-    .exec((error) => {
+    .exec(async (error) => {
       if (!error) {
+        await project_Schema.updateOne(
+          {
+            $and: [
+              { _id: request.idProject },
+              {
+                members: {
+                  $elemMatch: { idMember: { $eq: request.idUser } },
+                },
+              },
+            ],
+          },
+          { $set: { "members.$.tag": "Member" } }
+        );
+        await project_Schema.updateOne(
+          {
+            $and: [
+              { _id: request.idProject },
+              {
+                members: {
+                  $elemMatch: { idMember: { $eq: userNameId[0]._id } },
+                },
+              },
+            ],
+          },
+          { $set: { "members.$.tag": "Project Manager" } }
+        );
         res.send({ isSuccess: true });
       } else {
         res.send({ isSuccess: false });
@@ -296,8 +322,8 @@ export const listInfoProjectForOwner = async (req: Request, res: Response) => {
 export const removeProjectOwner = async (req: Request, res: Response) => {
   let request = req.body;
   // await project_Schema.deleteOne({ _id: request.idProject }).exec();
-  let infoProject = await project_Schema.find({ _id: request.idProject }).lean().exec()
-  
-
-
+  let infoProject = await project_Schema
+    .find({ _id: request.idProject })
+    .lean()
+    .exec();
 };

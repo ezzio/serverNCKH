@@ -8,6 +8,7 @@ const jobs: Schema = new Schema({
   end_time: { type: Date },
   is_completed: { type: Schema.Types.Boolean },
   progess: { type: Number },
+  
   priority: { type: String, required: true },
 });
 

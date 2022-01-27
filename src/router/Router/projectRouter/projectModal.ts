@@ -267,44 +267,89 @@ export const transferOwnerShipProject = async (req: Request, res: Response) => {
   let userNameId = await User_Schema.find({ user_name: request.user_name })
     .lean()
     .exec();
-  await project_Schema
-    .updateOne(
-      { _id: request.idProject, owners: request.idUser },
-      { $set: { owners: userNameId[0]._id } }
-    )
-    .exec(async (error) => {
-      if (!error) {
-        await project_Schema.updateOne(
-          {
-            $and: [
-              { _id: request.idProject },
-              {
-                members: {
-                  $elemMatch: { idMember: { $eq: request.idUser } },
-                },
-              },
-            ],
+  let projectInfo = await project_Schema
+    .find({
+      $and: [
+        { _id: request.idProject },
+        {
+          members: {
+            $elemMatch: { idMember: { $eq: userNameId[0]._id } },
           },
-          { $set: { "members.$.tag": "Member" } }
-        );
-        await project_Schema.updateOne(
-          {
-            $and: [
-              { _id: request.idProject },
-              {
-                members: {
-                  $elemMatch: { idMember: { $eq: userNameId[0]._id } },
+        },
+      ],
+    })
+    .lean();
+  // console.log(projectInfo);
+  if (projectInfo.length > 0) {
+    await project_Schema
+      .updateOne(
+        { _id: request.idProject, owners: request.idUser },
+        { $set: { owners: userNameId[0]._id } }
+      )
+      .exec(async (error) => {
+        if (!error) {
+          await project_Schema.updateOne(
+            {
+              $and: [
+                { _id: request.idProject },
+                {
+                  members: {
+                    $elemMatch: { idMember: { $eq: request.idUser } },
+                  },
                 },
-              },
-            ],
-          },
-          { $set: { "members.$.tag": "Project Manager" } }
-        );
-        res.send({ isSuccess: true });
-      } else {
-        res.send({ isSuccess: false });
-      }
-    });
+              ],
+            },
+            { $set: { "members.$.tag": "Member" } }
+          );
+          await project_Schema.updateOne(
+            {
+              $and: [
+                { _id: request.idProject },
+                {
+                  members: {
+                    $elemMatch: { idMember: { $eq: userNameId[0]._id } },
+                  },
+                },
+              ],
+            },
+            { $set: { "members.$.tag": "Leader" } }
+          );
+          res.send({ isSuccess: true });
+        } else {
+          res.send({ isSuccess: false });
+        }
+      });
+  } else {
+    await User_Schema.updateOne(
+      { _id: userNameId[0]._id },
+      { $push: { InfoAllProjectJoin: request.idProject } }
+    );
+    await project_Schema
+      .updateOne(
+        { _id: request.idProject },
+        { $push: { members: { idMember: userNameId[0]._id, tag: "Leader" } } }
+      )
+      .exec(async (err) => {
+        if (!err) {
+          await project_Schema.updateOne(
+            {
+              $and: [
+                { _id: request.idProject },
+                {
+                  members: {
+                    $elemMatch: { idMember: { $eq: request.idUser } },
+                  },
+                },
+              ],
+            },
+            { $set: { "members.$.tag": "Member" } }
+          );
+          res.send({ isSuccess: true });
+        } else {
+          res.send({ isSuccess: false });
+        }
+      });
+  }
 };
 
 export const listInfoProjectForOwner = async (req: Request, res: Response) => {

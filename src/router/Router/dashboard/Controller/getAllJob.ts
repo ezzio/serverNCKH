@@ -9,6 +9,6 @@ export async function getAllJob(req: Request, res: Response) {
     .lean()
     .exec();
   let infoProject = await ProjectSchema.findById({ _id: body.idProject });
-
-  if (result) res.send({ result, infoProject });
+  if (result) res.send(result)
+  // if (result) res.send({ result, infoProject });
 }

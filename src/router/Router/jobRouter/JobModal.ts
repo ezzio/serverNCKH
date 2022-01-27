@@ -1,25 +1,26 @@
-import { Request, Response } from "express";
-import { Job_Schema } from "../../../db/schema/jobs_Schema";
-import columns_Schema from "../../../db/schema/columns_Schema";
-import moment from "moment";
-import project_Schema from "../../../db/schema/Project_Schema";
-import User_Schema from "../../../db/schema/User_Schema";
+import { Request, Response } from 'express';
+import { Job_Schema } from '../../../db/schema/jobs_Schema';
+import columns_Schema from '../../../db/schema/columns_Schema';
+import moment from 'moment';
+import project_Schema from '../../../db/schema/Project_Schema';
+import User_Schema from '../../../db/schema/User_Schema';
 
 export async function createAJob(req: Request, res: Response) {
   let request = req.body;
   let allInfoUser: any[] = [];
   let memberInJob: any[] = [];
-  const dateFormat = "YYYY-MM-DD";
+  const dateFormat = 'YYYY-MM-DD';
   try {
     let Job = new Job_Schema({
       projectowner: request.projectowner,
-      title: request.title || "kanban project",
-      priority: request.priority || "Low",
+      title: request.title || 'kanban project',
+      priority: request.priority || 'Low',
       is_completed: request.is_completed || false,
       start_time: moment(request.start_time).format(dateFormat) || Date.now(),
       end_time: moment(request.end_time).format(dateFormat) || Date.now() + 1,
       progess: request.progess || 0,
       members: [],
+      parent: request.parent,
     });
     if (request.members) {
       for (const eachMember of request.members) {
@@ -182,6 +183,7 @@ export async function editJob(req: Request, res: Response) {
       priority: request.priority || infoJob[0].priority,
       is_completed: request.is_completed || infoJob[0].is_completed,
       members: infoJob[0].members,
+      parent: request.parent,
     };
     await Job_Schema.updateOne(
       { _id: request.kanban_id },
@@ -193,6 +195,7 @@ export async function editJob(req: Request, res: Response) {
           priority: edit_Job.priority,
           is_completed: edit_Job.is_completed,
           members: edit_Job.members,
+          parent: edit_Job.parent,
         },
       }
     ).exec((err: any) => {

@@ -20,7 +20,7 @@ export async function createAJob(req: Request, res: Response) {
       end_time: moment(request.end_time).format(dateFormat) || Date.now() + 1,
       progess: request.progess || 0,
       members: [],
-      parent: request.parent,
+      parent: request.parent === 'not' ? null : request.parent,
     });
     if (request.members) {
       for (const eachMember of request.members) {
@@ -183,7 +183,7 @@ export async function editJob(req: Request, res: Response) {
       priority: request.priority || infoJob[0].priority,
       is_completed: request.is_completed || infoJob[0].is_completed,
       members: infoJob[0].members,
-      parent: request.parent,
+      parent: request.parent === 'not' ? null : request.parent,
     };
     await Job_Schema.updateOne(
       { _id: request.kanban_id },

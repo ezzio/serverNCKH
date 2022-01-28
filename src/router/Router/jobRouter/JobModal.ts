@@ -49,7 +49,7 @@ export async function createAJob(req: Request, res: Response) {
         /// update project
         let newTimeLineForJob = {
           progress: 0,
-          jobEdit: request.idBoard,
+          jobEdit:  Job._id ,
         };
         new jobTimeLine_Schema(newTimeLineForJob).save(async (err, modal) => {
           console.log(modal);

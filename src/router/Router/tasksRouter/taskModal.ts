@@ -143,7 +143,7 @@ export async function createTask(req: Request, res: Response) {
       let newTimeLineForJob = {
         whoTrigger: request.owner,
         progress: (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
-        jobEdit: request.idBoard,
+        jobEdit: request.jobowner,
       };
       new jobTimeLine_Schema(newTimeLineForJob).save(async (err, modal) => {
         await project_Schema.updateOne(

@@ -5,6 +5,6 @@ const jobTimeLineSchema = new Schema({
   // whoTrigger: { type: Schema.Types.ObjectId, required: true },
   action: { type: String },
   progress: { type: Number },
-  jobEdit: { type: Schema.Types.ObjectId, ref: "jobs" },
+  jobEdit: { type: Schema.Types.ObjectId },
 });
 export default model<timeLineTaskInterface>("jobTimeLine", jobTimeLineSchema);

@@ -10,7 +10,7 @@ import {
   listInfoProjectForOwner,
   transferOwnerShipProject,
   renameProject,
-  updateProgressJob,
+  updateProgressProject,
 } from "./projectModal";
 const router = express.Router();
 
@@ -24,5 +24,5 @@ router.post("/listAllAttachmentInProject", listAllAttachmentInProject);
 router.post("/listSettingPage", listInfoProjectForOwner);
 router.post("/renameProject", renameProject);
 router.post("/transferProject", transferOwnerShipProject);
-router.post("/update-progress-job", updateProgressJob);
+router.post("/update-progress-project", updateProgressProject);
 export default router;

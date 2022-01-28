@@ -376,7 +376,7 @@ export const removeProjectOwner = async (req: Request, res: Response) => {
 };
 
 
-export const updateProgressJob = async (req: Request, res: Response) => {
+export const updateProgressProject = async (req: Request, res: Response) => {
   let request = req.body;
   await project_Schema
   .updateOne(

@@ -586,6 +586,20 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
             await columns_Schema.updateOne(
               {
                 jobowner: request.idBoard,
+                "column.id_column": 0,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 1,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
                 "column.id_column": 2,
               },
               { $pull: { "column.$.tasks": request.idTask } }
@@ -635,6 +649,20 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
             //
             res.send({ isSuccess: true });
           } else {
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 0,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
+            await columns_Schema.updateOne(
+              {
+                jobowner: request.idBoard,
+                "column.id_column": 1,
+              },
+              { $pull: { "column.$.tasks": request.idTask } }
+            );
             await columns_Schema.updateOne(
               {
                 jobowner: request.idBoard,

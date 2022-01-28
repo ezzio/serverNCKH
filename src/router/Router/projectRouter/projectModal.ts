@@ -358,7 +358,8 @@ export const listInfoProjectForOwner = async (req: Request, res: Response) => {
     .find({ _id: request.idProject, owners: request.idUser })
     .lean()
     .exec();
-  let infoUser = await User_Schema.find({ _id: request.iduser }).lean().exec();
+  let infoUser = await User_Schema.find({ _id: request.idUser }).lean().exec();
+  console.log(infoUser);
   res.send({
     name: infoProject[0].name,
     user_name: infoUser[0].user_name,

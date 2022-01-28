@@ -1,26 +1,27 @@
-import { Request, Response } from 'express';
-import { Job_Schema } from '../../../db/schema/jobs_Schema';
-import columns_Schema from '../../../db/schema/columns_Schema';
-import moment from 'moment';
-import project_Schema from '../../../db/schema/Project_Schema';
-import User_Schema from '../../../db/schema/User_Schema';
+import { Request, Response } from "express";
+import { Job_Schema } from "../../../db/schema/jobs_Schema";
+import columns_Schema from "../../../db/schema/columns_Schema";
+import moment from "moment";
+import project_Schema from "../../../db/schema/Project_Schema";
+import User_Schema from "../../../db/schema/User_Schema";
+import jobTimeLine_Schema from "../../../db/schema/jobTimeLine";
 
 export async function createAJob(req: Request, res: Response) {
   let request = req.body;
   let allInfoUser: any[] = [];
   let memberInJob: any[] = [];
-  const dateFormat = 'YYYY-MM-DD';
+  const dateFormat = "YYYY-MM-DD";
   try {
     let Job = new Job_Schema({
       projectowner: request.projectowner,
-      title: request.title || 'kanban project',
-      priority: request.priority || 'Low',
+      title: request.title || "kanban project",
+      priority: request.priority || "Low",
       is_completed: request.is_completed || false,
       start_time: moment(request.start_time).format(dateFormat) || Date.now(),
       end_time: moment(request.end_time).format(dateFormat) || Date.now() + 1,
       progess: request.progess || 0,
       members: [],
-      parent: request.parent === 'not' ? null : request.parent,
+      parent: request.parent === "not" ? null : request.parent,
     });
     if (request.members) {
       for (const eachMember of request.members) {
@@ -45,6 +46,22 @@ export async function createAJob(req: Request, res: Response) {
           { _id: Job._id },
           { $push: { members: { $each: allInfoUser } } }
         );
+        /// update project
+        let newTimeLineForJob = {
+          progress: 0,
+          jobEdit: request.idBoard,
+        };
+        new jobTimeLine_Schema(newTimeLineForJob).save(async (err, modal) => {
+          console.log(modal);
+         await  project_Schema.updateOne(
+            { _id: request.projectowner },
+            {
+              $push: { jobInProjectTimeLine: modal._id },
+            }
+          );
+        });
+        /// update project
+
         res.send({
           isSuccess: true,
           infoJob: {
@@ -105,7 +122,6 @@ export async function ListJobs(req: Request, res: Response) {
             });
           });
 
-          console.log(eachJob);
           ListJobsofUser.push({
             _id: eachJob._id,
             title: eachJob.title,
@@ -183,7 +199,7 @@ export async function editJob(req: Request, res: Response) {
       priority: request.priority || infoJob[0].priority,
       is_completed: request.is_completed || infoJob[0].is_completed,
       members: infoJob[0].members,
-      parent: request.parent === 'not' ? null : request.parent,
+      parent: request.parent === "not" ? null : request.parent,
     };
     await Job_Schema.updateOne(
       { _id: request.kanban_id },

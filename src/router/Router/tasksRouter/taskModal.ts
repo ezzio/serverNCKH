@@ -8,6 +8,7 @@ import detailTask_Schema from "../../../db/schema/detailTask_Schema";
 import project_Schema from "../../../db/schema/Project_Schema";
 import Attachment_Schema from "../../../db/schema/Attachments_Schema";
 import timeLineTask_Schema from "../../../db/schema/timeLineTask_Schema";
+import jobTimeLine_Schema from "../../../db/schema/jobTimeLine";
 import conversationInTask_Schema from "../../../db/schema/conversationInTask";
 let PORT = process.env.PORTURL || "http://localhost:4000";
 
@@ -90,6 +91,7 @@ export async function listTaskKanban(req: Request, res: Response) {
 
 export async function createTask(req: Request, res: Response) {
   let request = req.body;
+  let findJob = await Job_Schema.find({ _id: request.idBoard }).lean().exec();
   let infoNewTask = {
     title: request.title,
     progress: request.progress,
@@ -128,6 +130,8 @@ export async function createTask(req: Request, res: Response) {
         .find({ idJobOwner: request.idBoard })
         .lean()
         .exec();
+
+      // job update progress
       await Job_Schema.updateOne(
         { _id: request.idBoard },
         {
@@ -136,6 +140,20 @@ export async function createTask(req: Request, res: Response) {
           },
         }
       );
+      let newTimeLineForJob = {
+        whoTrigger: request.owner,
+        progress: (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+        jobEdit: request.idBoard,
+      };
+      new jobTimeLine_Schema(newTimeLineForJob).save(async (err, modal) => {
+        await project_Schema.updateOne(
+          { _id: findJob[0].projectowner },
+          {
+            $push: { jobInProjectTimeLine: modal._id },
+          }
+        );
+      });
+      // await project_schema.updateOne()
 
       await columns_Schema.updateOne(
         {
@@ -144,9 +162,7 @@ export async function createTask(req: Request, res: Response) {
         },
         { $push: { "column.$.tasks": modal._id } }
       );
-      let findJob = await Job_Schema.find({ _id: request.idBoard })
-        .lean()
-        .exec();
+
       let createANewTimeLine = {
         whoTrigger: request.owner,
         action: "create",
@@ -217,7 +233,7 @@ export async function deleteTask(req: Request, res: Response) {
               .lean()
               .exec();
             let createANewTimeLine = {
-              whoTrigger: request.owner,
+              // whoTrigger: request.owner,
               action: "Delete",
               taskEdit: {
                 idTask: modal[0]._id,
@@ -557,6 +573,7 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
 export const checkIsCompleteTask = async (req: Request, res: Response) => {
   let request = req.body;
   let findTask = await task_Schema.find({ _id: request.idTask }).lean().exec();
+  let findJob = await Job_Schema.find({ _id: request.idBoard }).lean().exec();
   if (findTask.length > 0) {
     await task_Schema
       .updateOne(
@@ -598,7 +615,24 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
                 },
               }
             );
-
+            // update job time line
+            let newTimeLineForJob = {
+              whoTrigger: request.owner,
+              progress:
+                (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+              jobEdit: request.idBoard,
+            };
+            new jobTimeLine_Schema(newTimeLineForJob).save(
+              async (err, modal) => {
+                await project_Schema.updateOne(
+                  { _id: findJob[0].projectowner },
+                  {
+                    $push: { jobInProjectTimeLine: modal._id },
+                  }
+                );
+              }
+            );
+            //
             res.send({ isSuccess: true });
           } else {
             await columns_Schema.updateOne(
@@ -637,6 +671,24 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
               }
             );
 
+            /// update process job
+            let newTimeLineForJob = {
+              whoTrigger: request.owner,
+              progress:
+                (allTaskInfoIsComplete.length / allTaskInfo.length) * 100,
+              jobEdit: request.idBoard,
+            };
+            new jobTimeLine_Schema(newTimeLineForJob).save(
+              async (err, modal) => {
+                project_Schema.updateOne(
+                  { _id: findJob[0].projectowner },
+                  {
+                    $set: { jobInProjectTimeLine: modal._id },
+                  }
+                );
+              }
+            );
+            /// update process job
             res.send({ isSuccess: true });
           }
         } else {

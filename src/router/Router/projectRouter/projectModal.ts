@@ -358,8 +358,10 @@ export const listInfoProjectForOwner = async (req: Request, res: Response) => {
     .find({ _id: request.idProject, owners: request.idUser })
     .lean()
     .exec();
+  let infoUser = await User_Schema.find({ _id: request.iduser }).lean().exec();
   res.send({
     name: infoProject[0].name,
+    user_name: infoUser[0].user_name,
     isSuccess: true,
   });
 };

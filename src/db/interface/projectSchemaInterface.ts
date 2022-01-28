@@ -1,4 +1,4 @@
-import { Document, Schema, ObjectId } from "mongoose";
+import { Document, Schema, ObjectId } from 'mongoose';
 export interface projectSchemaInterface extends Document {
   name: string;
   createAt: Date;
@@ -7,4 +7,5 @@ export interface projectSchemaInterface extends Document {
   members: [{ idMember: ObjectId; tag: string }];
   owners: ObjectId[];
   projectTimeLine: ObjectId[];
+  jobInProjectTimeLine: ObjectId[];
 }

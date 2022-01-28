@@ -374,3 +374,22 @@ export const removeProjectOwner = async (req: Request, res: Response) => {
     .lean()
     .exec();
 };
+
+
+export const updateProgressJob = async (req: Request, res: Response) => {
+  let request = req.body;
+  await project_Schema
+  .updateOne(
+    {
+      _id: request.idProject,
+    },
+    { $set: { progress: request.progress } }
+  )
+  .exec((error) => {
+    if (!error) {
+      res.send({ isSuccess: true });
+    } else {
+      res.send({ isSuccess: false });
+    }
+  });
+}

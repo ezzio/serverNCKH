@@ -13,5 +13,5 @@ export default interface taskSchemaInterface extends Document {
   end_time: Date;
   detailTask: [];
   taskers: any[];
-  idJobOwner: string;
+  idJobOwner: ObjectId;
 }

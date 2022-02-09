@@ -5,7 +5,7 @@ export async function register(req: Request, res: Response) {
   let User = new user_Schema({ ...req.body });
   await User.save(function (err, modal) {
     if (!err) {
-      console.log(modal);
+
       res.send({ isSuccess: true, id: modal._id });
     } else {
       res.send({ error: 'Register fail', isSuccess: false });

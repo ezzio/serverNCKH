@@ -52,7 +52,7 @@ export async function createAJob(req: Request, res: Response) {
           jobEdit:  Job._id ,
         };
         new jobTimeLine_Schema(newTimeLineForJob).save(async (err, modal) => {
-          console.log(modal);
+    
          await  project_Schema.updateOne(
             { _id: request.projectowner },
             {

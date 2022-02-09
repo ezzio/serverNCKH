@@ -225,30 +225,29 @@ export async function deleteTask(req: Request, res: Response) {
     )
     .exec(async (error) => {
       if (!error) {
-        await task_Schema
+        let findTaskInfo = await task_Schema
           .find({ _id: request.taskId })
           .lean()
-          .exec(async (err, modal) => {
-            let findJob = await Job_Schema.find({ _id: request.jobowner })
-              .lean()
-              .exec();
-            let createANewTimeLine = {
-              // whoTrigger: request.owner,
-              action: "Delete",
-              taskEdit: {
-                idTask: modal[0]._id,
-                taskTitle: modal[0].title,
-              },
-            };
-            new timeLineTask_Schema(createANewTimeLine).save(
-              async (err, modal) => {
-                await project_Schema.updateOne(
-                  { _id: findJob[0].projectowner },
-                  { $push: { projectTimeLine: modal._id } }
-                );
-              }
-            );
-          });
+          .exec();
+
+        let findJob = await Job_Schema.find({ _id: request.jobowner })
+          .lean()
+          .exec();
+        let createANewTimeLine = {
+          whoTrigger: request.owner,
+          action: "Delete",
+          taskEdit: {
+            idTask: findTaskInfo[0]._id,
+            taskTitle: findTaskInfo[0].title,
+          },
+        };
+
+        new timeLineTask_Schema(createANewTimeLine).save(async (err, modal) => {
+          await project_Schema.updateOne(
+            { _id: findJob[0].projectowner },
+            { $push: { projectTimeLine: modal._id } }
+          );
+        });
         await task_Schema.deleteOne({ _id: request.taskId }, (ok) => {
           res.send({ isSuccess: true });
         });
@@ -324,7 +323,7 @@ export const editTask = async (req: Request, res: Response) => {
           .find({ _id: request.taskId })
           .lean()
           .exec(async (err, modal) => {
-            let findJob = await Job_Schema.find({ _id: request.jobowner })
+            let findJob = await Job_Schema.find({ _id: request.idBoard })
               .lean()
               .exec();
             let createANewTimeLine = {
@@ -449,7 +448,11 @@ export const completeAndUncompleteDetailTask = async (
   let detailTaskComplete = request.idDetailTask;
   let listAllDetailTask = TaskInfo[0].detailTask;
   for (const eachDetailTask of listAllDetailTask) {
-    if (      JSON.stringify(detailTaskComplete).indexOf(        JSON.stringify(eachDetailTask)      ) != -1    ) {
+    if (
+      JSON.stringify(detailTaskComplete).indexOf(
+        JSON.stringify(eachDetailTask)
+      ) != -1
+    ) {
       await detailTask_Schema.updateOne(
         { _id: eachDetailTask },
         {

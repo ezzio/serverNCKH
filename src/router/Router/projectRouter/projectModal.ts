@@ -2,6 +2,7 @@ import User_Schema from "../../../db/schema/User_Schema";
 import { Request, Response } from "express";
 import project_Schema from "../../../db/schema/Project_Schema";
 import detailTask_Schema from "../../../db/schema/detailTask_Schema";
+import { deletProjectWithId } from "../../../router/deleteCollection/deleteCollection";
 import Attachment_Schema from "../../../db/schema/Attachments_Schema";
 let PORT = process.env.PORTURL || "http://localhost:4000";
 export async function listAllProject(req: Request, res: Response) {
@@ -376,21 +377,26 @@ export const removeProjectOwner = async (req: Request, res: Response) => {
     .exec();
 };
 
-
 export const updateProgressProject = async (req: Request, res: Response) => {
   let request = req.body;
   await project_Schema
-  .updateOne(
-    {
-      _id: request.idProject,
-    },
-    { $set: { progress: request.progress } }
-  )
-  .exec((error) => {
-    if (!error) {
-      res.send({ isSuccess: true });
-    } else {
-      res.send({ isSuccess: false });
-    }
-  });
-}
+    .updateOne(
+      {
+        _id: request.idProject,
+      },
+      { $set: { progress: request.progress } }
+    )
+    .exec((error) => {
+      if (!error) {
+        res.send({ isSuccess: true });
+      } else {
+        res.send({ isSuccess: false });
+      }
+    });
+};
+
+export const deleteProjectWithId = async (req: Request, res: Response) => {
+  let request = req.body;
+  let result = await deletProjectWithId(request.idProject);
+  res.send(result ? { isSuccess: true } : { isSuccess: false });
+};

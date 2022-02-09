@@ -15,9 +15,12 @@ import {
   checkIsCompleteTask,
   listMessageInDetailTask,
 } from "./taskModal";
+import { Request, Response } from "express";
 const router = express.Router();
 const multer = require("multer");
 import { storage } from "../../../db/functionForDB/upload";
+import { deletProjectWithId } from "../../../router/deleteCollection/deleteCollection";
+import { Job_Schema } from "../../../db/schema/jobs_Schema";
 const upload = multer({ dest: "uploads/" });
 
 router.post("/ListTasks/kaban", listTaskKanban);
@@ -28,6 +31,7 @@ router.post("/editTask", editTask);
 router.post("/listAllDetailTask", listDetailTask);
 router.post("/editDetailTask", editDetailTask);
 router.post("/deleteDetailTask", deleteDetailTask);
+
 router.post("/updateTaskOverdue", updateTaskOverdue);
 router.post(
   "/completeAndUncompleteDetailTask",

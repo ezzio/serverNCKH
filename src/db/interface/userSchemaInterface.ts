@@ -6,7 +6,7 @@ export default interface userSchemaInterface extends Document {
   display_name: string;
   bio: string;
   company: string;
-  location: string;
+  address: string;
   email: string;
   avatar: string;
   github_token: string;

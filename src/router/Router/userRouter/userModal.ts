@@ -17,10 +17,10 @@ export async function getUserInfo(req: Request, res: Response) {
         user_name: userInfo[0].user_name,
         display_name: userInfo[0].display_name || "",
         avatar: userInfo[0].avatar,
-        bio: userInfo[0].bio || "",
-        company: userInfo[0].company || "",
-        email: userInfo[0].email || "",
-        location: userInfo[0].location || "",
+        bio: userInfo[0].bio || '',
+        company: userInfo[0].company || '',
+        email: userInfo[0].email || '',
+        address: userInfo[0].address || '',
       },
     });
   }
@@ -118,7 +118,7 @@ export async function editProfile(req: Request, res: Response) {
       display_name: request.display_name || userInfo[0].display_name,
       bio: request.bio || userInfo[0].bio,
       company: request.company || userInfo[0].company,
-      location: request.location || userInfo[0].location,
+      address: request.location || userInfo[0].address,
       email: request.email || userInfo[0].email,
     };
     user_Schema
@@ -129,7 +129,7 @@ export async function editProfile(req: Request, res: Response) {
             display_name: infoEdit.display_name,
             bio: infoEdit.bio,
             company: infoEdit.company,
-            location: infoEdit.location,
+            address: infoEdit.address,
             email: infoEdit.email,
           },
         }

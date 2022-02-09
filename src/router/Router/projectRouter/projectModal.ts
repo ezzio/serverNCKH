@@ -396,9 +396,7 @@ export const updateProgressProject = async (req: Request, res: Response) => {
 };
 
 export const deleteProjectWithId = async (req: Request, res: Response) => {
-  async (req: Request, res: Response) => {
-    let request = req.body;
-    let result = await deletProjectWithId(request.idProject);
-    res.send(result ? { isSuccess: true } : { isSuccess: false });
-  };
+  let request = req.body;
+  let result = await deletProjectWithId(request.idProject);
+  res.send(result ? { isSuccess: true } : { isSuccess: false });
 };

@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import project_Schema from "../../db/schema/Project_Schema";
 import Attachment_Schema from "../../db/schema/Attachments_Schema";
 import timeLineTask_Schema from "../../db/schema/timeLineTask_Schema";
@@ -6,9 +5,13 @@ import detailTask_Schema from "../../db/schema/detailTask_Schema";
 import jobTimeLine_Schema from "../../db/schema/jobTimeLine";
 import task_Schema from "../../db/schema/task_Schema";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+
+import columns_Schema from "../../db/schema/columns_Schema";
+import mongoose, { Schema, ObjectId } from "mongoose";
 const Grid = require("gridfs-stream");
 import { connection } from "../../db/configmongoose";
+import { Job_Schema } from "../../db/schema/jobs_Schema";
+import User_Schema from "../../db/schema/User_Schema";
 let gfs: any;
 
 const conn = mongoose.connection;
@@ -57,11 +60,13 @@ export const deleteDetailTaskWithId = async (
                 .collection("fs.chunks")
                 .deleteMany({ files_id: gfsFileId._id });
               await gfs.files.deleteOne({ filename: attachmentInfo[0].name });
-     
-
-              
+              await task_Schema.updateOne(
+                { _id: idTask },
+                {
+                  $pull: { detailTask: idDetailTask },
+                }
+              );
             } else {
-      
             }
           });
       } catch (ex) {
@@ -73,12 +78,59 @@ export const deleteDetailTaskWithId = async (
   return true;
 };
 
-// export const deleteTask = async (taskId: ObjectId)=> {
-//     let findDetailTask = await task_Schema.find({ _id: taskId}).lean().exec();
-//     if(findDetailTask.length > 0){
-//         for(let detailTask of findDetailTask[0].detailTask){
-//             deleteDetailTask(detailTask)
-//         }
-//     }
-//     // await task_Schema.deleteOne({ _id: taskId }).lean().exec();
-// }
+export const deleteTaskWithId = async (idTask: Schema.Types.ObjectId) => {
+  let taskInfo = await task_Schema.find({ _id: idTask }).lean().exec();
+  for (const detailTask of taskInfo[0].detailTask) {
+    deleteDetailTaskWithId(detailTask, idTask);
+  }
+  await await task_Schema.deleteOne({ _id: idTask });
+  return true;
+};
+
+export const deleteJobWithId = async (idJob: ObjectId) => {
+  let columnInfo = await columns_Schema.find({ jobowner: idJob }).lean().exec();
+
+  let allColumns = columnInfo[0].column;
+  for (const eachColumn of allColumns) {
+    if (eachColumn.tasks.length > 0) {
+      for (const eachTask of eachColumn.tasks) {
+        deleteTaskWithId(eachTask);
+      }
+    }
+  }
+  await columns_Schema.deleteOne({ jobowner: idJob });
+  await Job_Schema.deleteOne({ _id: idJob });
+  return true;
+};
+
+export const deletProjectWithId = async (idProject: ObjectId) => {
+  let findAllJobInProject = await Job_Schema.find({ projectowner: idProject });
+  // console.log(findAllJobInProject);
+  if (findAllJobInProject.length > 0) {
+    for (const eachJob of findAllJobInProject) {
+      // console.log(eachJob)
+      deleteJobWithId(eachJob._id);
+    }
+  }
+  let projectInfo = await project_Schema.find({ _id: idProject }).lean().exec();
+  if (projectInfo.length > 0) {
+    for (const eachTimeLineOfProject of projectInfo[0].projectTimeLine) {
+      await timeLineTask_Schema.deleteOne({ _id: eachTimeLineOfProject });
+    }
+    for (const eachTimeLineJobOfProject of projectInfo[0]
+      .jobInProjectTimeLine) {
+      await jobTimeLine_Schema.deleteOne({ _id: eachTimeLineJobOfProject });
+    }
+  }
+  let userOwnerProject = await User_Schema.find({
+    InfoAllProjectJoin: { $in: [idProject] },
+  })
+    .lean()
+    .exec();
+  await User_Schema.updateOne(
+    { _id: userOwnerProject[0]._id },
+    { $pull: { InfoAllProjectJoin: idProject } }
+  );
+  await project_Schema.deleteOne({ _id: idProject });
+  return true;
+};

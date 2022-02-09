@@ -15,7 +15,7 @@ export async function register(req: Request, res: Response) {
 export async function checkEmail(req: Request, res: Response) {
   let request = req.body;
   let checkUser = await user_Schema
-    .find({ user_name: request.email })
+    .find({ user_name: request.user_name })
     .lean()
     .exec();
   if (checkUser) {

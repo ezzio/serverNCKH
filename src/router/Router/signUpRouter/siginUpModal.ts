@@ -3,9 +3,10 @@ import { Request, Response } from 'express';
 
 export async function register(req: Request, res: Response) {
   let User = new user_Schema({ ...req.body });
-  await User.save(function (err: any) {
+  await User.save(function (err , modal) {
     if (!err) {
-      res.send({ isSuccess: true });
+      console.log(modal)
+      res.send({ isSuccess: true, id : modal._id });
     } else {
       res.send({ error: 'Register fail', isSuccess: false });
     }
@@ -14,6 +15,7 @@ export async function register(req: Request, res: Response) {
 
 export async function checkUsername(req: Request, res: Response) {
   let request = req.body;
+  console.log(request.user_name);
   let checkUser = await user_Schema
     .find({ user_name: request.user_name })
     .lean()
@@ -21,6 +23,6 @@ export async function checkUsername(req: Request, res: Response) {
   if (checkUser.length > 0) {
     res.send({ isSuccess: true });
   } else {
-    res.send({ error: 'Your email is existed', isSuccess: false });
+    res.send({ error: 'Your email is existed', isSuccess: checkUser });
   }
 }

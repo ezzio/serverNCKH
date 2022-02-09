@@ -18,7 +18,7 @@ export async function checkUsername(req: Request, res: Response) {
     .find({ user_name: request.user_name })
     .lean()
     .exec();
-  if (checkUser) {
+  if (checkUser.length > 0) {
     res.send({ isSuccess: true });
   } else {
     res.send({ error: 'Your email is existed', isSuccess: false });

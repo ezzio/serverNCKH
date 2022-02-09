@@ -1,10 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export async function connection() {
   mongoose
     .connect(
       process.env.MONGODB_URL ||
-        "mongodb://localhost:27017/Horenso_Manager",
+        "mongodb+srv://ezzio:123456thang@cluster0.zbyuh.mongodb.net/Horenso_Manager?retryWrites=true&w=majority",
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

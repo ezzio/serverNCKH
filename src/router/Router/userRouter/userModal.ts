@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import user_Schema from '../../../db/schema/User_Schema';
-import project_Schema from '../../../db/schema/Project_Schema';
-import task_Schema from '../../../db/schema/task_Schema';
-import { Job_Schema } from '../../../db/schema/jobs_Schema';
-let PORT = process.env.PORTURL || 'http://localhost:4000';
+import { Request, Response, NextFunction } from "express";
+import user_Schema from "../../../db/schema/User_Schema";
+import project_Schema from "../../../db/schema/Project_Schema";
+import task_Schema from "../../../db/schema/task_Schema";
+import { Job_Schema } from "../../../db/schema/jobs_Schema";
+let PORT = process.env.PORTURL || "http://localhost:4000";
 
 export async function getUserInfo(req: Request, res: Response) {
   let request = req.body;
@@ -15,22 +15,23 @@ export async function getUserInfo(req: Request, res: Response) {
     result.push({
       userInfo: {
         user_name: userInfo[0].user_name,
-        display_name: userInfo[0].display_name || '',
+        display_name: userInfo[0].display_name || "",
         avatar: userInfo[0].avatar,
-        bio: userInfo[0].bio || '',
-        company: userInfo[0].company || '',
-        email: userInfo[0].email || '',
-        location: userInfo[0].location || '',
+        bio: userInfo[0].bio || "",
+        company: userInfo[0].company || "",
+        email: userInfo[0].email || "",
+        location: userInfo[0].location || "",
       },
     });
   }
   /// find project of User
   let projectUserJoin = await project_Schema
     .find({
-      'members.idMember': { $in: request.owner },
+      "members.idMember": { $in: request.owner },
     })
     .lean()
     .exec();
+  // project user join
   for (let eachIdProject of projectUserJoin) {
     let project = await project_Schema
       .find({ _id: eachIdProject })
@@ -49,10 +50,32 @@ export async function getUserInfo(req: Request, res: Response) {
         });
       }
     }
+    // all job in project
+    let allJobInProject = await Job_Schema.find({ projectowner: eachIdProject })
+      .lean()
+      .exec();
+    let allTaskComplete: any[] = [];
+    let allTaskInJob: any[] = [];
+    for (const eachJob of allJobInProject) {
+  
+      let TaskComplete = await task_Schema
+        .find({ $and: [{ idJobOwner: eachJob._id }, { is_complete: true }] })
+        .lean()
+        .exec();
+      allTaskComplete.push(...TaskComplete);
+      let TaskInJob = await task_Schema
+        .find({ idJobOwner: eachJob._id })
+        .lean()
+        .exec();
+      allTaskInJob.push(...TaskInJob);
+    }
     allProject.push({
       idProject: project[0]._id,
       title: project[0].name,
       members: memberInRoom,
+      progress: project[0].progress || 0,
+      totalTaskInProject: allTaskInJob.length,
+      totalTaskComplete: allTaskComplete.length,
     });
   }
   //find task have user
@@ -119,13 +142,13 @@ export async function editProfile(req: Request, res: Response) {
         }
       });
   } else {
-    res.send({ isSuccess: false, error: 'user not found !' });
+    res.send({ isSuccess: false, error: "user not found !" });
   }
 }
 
 export async function uploadAvatar(req: Request, res: Response) {
   let request = req.body;
-  if (req.file === undefined) return res.send('you must select a file.');
+  if (req.file === undefined) return res.send("you must select a file.");
   const imgUrl = `${PORT}/photo/${req.file.filename}`;
   try {
     await user_Schema.updateOne(
@@ -152,7 +175,7 @@ export async function searchSubStringUserName(req: Request, res: Response) {
     for (const eachUser of userNameFound) {
       listUserFound.push({
         user_name: eachUser.user_name,
-        display_name: eachUser.display_name || '',
+        display_name: eachUser.display_name || "",
         avatar: eachUser.avatar,
       });
     }

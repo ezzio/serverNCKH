@@ -12,7 +12,7 @@ export async function register(req: Request, res: Response) {
   });
 }
 
-export async function checkEmail(req: Request, res: Response) {
+export async function checkUsername(req: Request, res: Response) {
   let request = req.body;
   let checkUser = await user_Schema
     .find({ user_name: request.user_name })

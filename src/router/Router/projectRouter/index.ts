@@ -11,6 +11,7 @@ import {
   transferOwnerShipProject,
   renameProject,
   updateProgressProject,
+  deleteProjectWithId
 } from "./projectModal";
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.post("/listAllAttachmentInProject", listAllAttachmentInProject);
 router.post("/listSettingPage", listInfoProjectForOwner);
 router.post("/renameProject", renameProject);
 router.post("/transferProject", transferOwnerShipProject);
+router.post("/deleteDetailTaskWithId",deleteProjectWithId );
 router.post("/update-progress-project", updateProgressProject);
 export default router;

@@ -558,19 +558,31 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         idTasktemp.id,
         idTasktemp.is_complete,
       ]);
-      await columns_Schema.updateOne(
-        {
-          jobowner: request.idBoard,
-          "column.id_column": eachColumn.id_column,
-        },
-        { $set: { "column.$.tasks": eachColumnTask } }
-      );
+
+      let tempColumnTask = eachColumnTask[0] || [];
+      if (tempColumnTask.length > 0) {
+        console.log(tempColumnTask);
+        await columns_Schema.updateOne(
+          {
+            jobowner: request.idBoard,
+            "column.id_column": eachColumn.id_column,
+          },
+          { $set: { "column.$.tasks": tempColumnTask[0] } }
+        );
+      } else {
+        await columns_Schema.updateOne(
+          {
+            jobowner: request.idBoard,
+            "column.id_column": eachColumn.id_column,
+          },
+          { $set: { "column.$.tasks": [] } }
+        );
+      }
+
       allTaskInColumn.push(...eachColumnTask);
-      // console.log(eachColumnTask);
     }
 
     allTaskInColumn.forEach((eachTaskInColumn) => {
-      console.log(eachTaskInColumn);
       if (eachTaskInColumn[1] == true) {
         countIsCompleteTask++;
       }

@@ -578,7 +578,6 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
           { $set: { "column.$.tasks": [] } }
         );
       }
-
       allTaskInColumn.push(...eachColumnTask);
     }
 
@@ -587,15 +586,16 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         countIsCompleteTask++;
       }
     });
+ 
     await Job_Schema.updateOne(
       { _id: request.idBoard },
       {
         $set: {
-          progress: (countIsCompleteTask / allTaskInColumn.length) * 100,
+          progess: (countIsCompleteTask / allTaskInColumn.length) * 100,
         },
       }
     );
-
+ 
     res.send({ isSuccess: true });
   } else {
     res.send({ isSuccess: false });

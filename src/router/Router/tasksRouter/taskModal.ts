@@ -549,12 +549,15 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
     .find({ jobowner: request.idBoard })
     .lean()
     .exec();
+  let allTaskInColumn: any[] = [];
+  let countIsCompleteTask = 0;
   let columns = request.columns;
   if (findJob.length > 0) {
     for (const eachColumn of columns) {
-      let eachColumnTask = eachColumn.eachColumnTask.map(
-        (idTasktemp: any) => idTasktemp.id
-      );
+      let eachColumnTask = eachColumn.eachColumnTask.map((idTasktemp: any) => [
+        idTasktemp.id,
+        idTasktemp.is_complete,
+      ]);
       await columns_Schema.updateOne(
         {
           jobowner: request.idBoard,
@@ -562,7 +565,25 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         },
         { $set: { "column.$.tasks": eachColumnTask } }
       );
+      allTaskInColumn.push(...eachColumnTask);
+      // console.log(eachColumnTask);
     }
+
+    allTaskInColumn.forEach((eachTaskInColumn) => {
+      console.log(eachTaskInColumn);
+      if (eachTaskInColumn[1] == true) {
+        countIsCompleteTask++;
+      }
+    });
+    await Job_Schema.updateOne(
+      { _id: request.idBoard },
+      {
+        $set: {
+          progress: (countIsCompleteTask / allTaskInColumn.length) * 100,
+        },
+      }
+    );
+
     res.send({ isSuccess: true });
   } else {
     res.send({ isSuccess: false });
@@ -685,9 +706,7 @@ export const checkIsCompleteTask = async (req: Request, res: Response) => {
               .find({ idJobOwner: request.idBoard })
               .lean()
               .exec();
-            console.log(
-              (allTaskInfoIsComplete.length / allTaskInfo.length) * 100
-            );
+
             await Job_Schema.updateOne(
               { _id: request.idBoard },
               {

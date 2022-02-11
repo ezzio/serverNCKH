@@ -108,11 +108,16 @@ export async function createTask(req: Request, res: Response) {
 
   let listTaskers = request.taskers;
   let infoTaskers: any = [];
-  for (var i = 0; i < listTaskers.length; i++) {
-    let eachTasker = await User_Schema.find({ user_name: listTaskers[i].name })
+  console.log(listTaskers);
+  for (const eachTaskerRequest of listTaskers) {
+    let eachTasker = await User_Schema.find({
+      user_name: eachTaskerRequest.name,
+    })
       .lean()
       .exec();
+
     infoNewTask.taskers.push(eachTasker[0]._id);
+
     infoTaskers.push({
       user_name: eachTasker[0].user_name,
       avatar: eachTasker[0].avatar,
@@ -122,6 +127,15 @@ export async function createTask(req: Request, res: Response) {
     if (err) {
       res.send({ isSuccess: false });
     } else {
+      // console.log(modal);
+      await columns_Schema.updateOne(
+        {
+          jobowner: request.idBoard,
+          "column.id_column": 0,
+        },
+        { $push: { "column.$.tasks": modal._id } }
+      );
+
       let allTaskInfoIsComplete = await task_Schema
         .find({ idJobOwner: request.idBoard, is_complete: true })
         .lean()
@@ -153,15 +167,6 @@ export async function createTask(req: Request, res: Response) {
           }
         );
       });
-      // await project_schema.updateOne()
-
-      await columns_Schema.updateOne(
-        {
-          jobowner: request.idBoard,
-          "column.id_column": 0,
-        },
-        { $push: { "column.$.tasks": modal._id } }
-      );
 
       let createANewTimeLine = {
         whoTrigger: request.owner,
@@ -559,15 +564,20 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         idTasktemp.is_complete,
       ]);
 
-      let tempColumnTask = eachColumnTask[0] || [];
+      let tempColumnTask = eachColumnTask || [];
       if (tempColumnTask.length > 0) {
-        console.log(tempColumnTask);
+        let tempValueOfColumn = [];
+        for (const eachTaskInColumn of tempColumnTask) {
+          if (eachTaskInColumn) {
+            tempValueOfColumn.push(eachTaskInColumn[0]);
+          }
+        }
         await columns_Schema.updateOne(
           {
             jobowner: request.idBoard,
             "column.id_column": eachColumn.id_column,
           },
-          { $set: { "column.$.tasks": tempColumnTask[0] } }
+          { $set: { "column.$.tasks": tempValueOfColumn } }
         );
       } else {
         await columns_Schema.updateOne(
@@ -586,7 +596,7 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         countIsCompleteTask++;
       }
     });
- 
+
     await Job_Schema.updateOne(
       { _id: request.idBoard },
       {
@@ -595,7 +605,7 @@ export const changeTaskInColumn = async (req: Request, res: Response) => {
         },
       }
     );
- 
+
     res.send({ isSuccess: true });
   } else {
     res.send({ isSuccess: false });

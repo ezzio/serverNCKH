@@ -17,10 +17,10 @@ export async function getUserInfo(req: Request, res: Response) {
         user_name: userInfo[0].user_name,
         display_name: userInfo[0].display_name || "",
         avatar: userInfo[0].avatar,
-        bio: userInfo[0].bio || '',
-        company: userInfo[0].company || '',
-        email: userInfo[0].email || '',
-        address: userInfo[0].address || '',
+        bio: userInfo[0].bio || "",
+        company: userInfo[0].company || "",
+        email: userInfo[0].email || "",
+        address: userInfo[0].address || "",
       },
     });
   }
@@ -57,7 +57,6 @@ export async function getUserInfo(req: Request, res: Response) {
     let allTaskComplete: any[] = [];
     let allTaskInJob: any[] = [];
     for (const eachJob of allJobInProject) {
-  
       let TaskComplete = await task_Schema
         .find({ $and: [{ idJobOwner: eachJob._id }, { is_complete: true }] })
         .lean()

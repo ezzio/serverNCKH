@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import project_Schema from "../../../db/schema/Project_Schema";
 import detailTask_Schema from "../../../db/schema/detailTask_Schema";
 import { deletProjectWithId } from "../../../router/deleteCollection/deleteCollection";
+import conversation_Schema from "../../../db/schema/conversation_Schema";
 import Attachment_Schema from "../../../db/schema/Attachments_Schema";
 let PORT = process.env.PORTURL || "http://localhost:4000";
 export async function listAllProject(req: Request, res: Response) {
@@ -71,6 +72,10 @@ export async function createAProject(req: Request, res: Response) {
     if (err) {
       console.log(err);
     } else {
+      let newConversation = {
+        projectOwner: modal._id,
+      };
+      new conversation_Schema(newConversation).save();
       res.send({ isSuccess: true, idProject: modal._id });
     }
   });

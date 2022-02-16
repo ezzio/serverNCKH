@@ -25,7 +25,6 @@ export default (server: express.Express, app: any) => {
     });
 
     socket.on("sendMessage", async (message: any) => {
-      console.log(message);
       await conversationInTask_Schema.updateOne(
         { idTask: message.room_id },
         {

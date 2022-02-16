@@ -185,8 +185,8 @@ export async function searchSubStringUserName(req: Request, res: Response) {
 }
 
 export const checkRoleUserInProject = async (req: Request, res: Response) => {
-  let { user_name, idProject } = req.body;
-  let infoUser = await user_Schema.find({ user_name: user_name }).lean().exec();
+  let { id, idProject } = req.body;
+  let infoUser = await user_Schema.find({ _id: id }).lean().exec();
   let infoUserInProject = await project_Schema.find({
     $and: [
       { _id: idProject },

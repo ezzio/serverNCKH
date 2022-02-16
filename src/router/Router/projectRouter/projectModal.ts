@@ -22,7 +22,7 @@ export async function listAllProject(req: Request, res: Response) {
         ListProject.push({
           name: eachProject.name,
           createAt: eachProject.createAt,
-          description: "project duoc tao ra boi thang",
+          // description: "project duoc tao ra boi thang",
         });
     }
     res.send(ListProject);

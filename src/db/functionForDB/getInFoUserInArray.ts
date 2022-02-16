@@ -13,13 +13,11 @@ export default async (listInMemberInRoom: LeanDocument<ObjectId>[]) => {
   if (listInMemberInRoom.length > 0)
     for (const eachUser of listInMemberInRoom) {
       let infoUser = await User_Schema.find({ _id: eachUser }).lean().exec();
-
       infOListMember.push({
         id: infoUser[0]._id,
         display_name: infoUser[0].display_name,
         avatar: infoUser[0].avatar,
       });
     }
-//   console.log(infOListMember);
   return infOListMember;
 };

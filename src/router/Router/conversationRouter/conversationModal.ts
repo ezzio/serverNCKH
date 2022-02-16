@@ -59,6 +59,7 @@ export const listConversationInProject = async (
           .exec();
         let listMember = await listMemberInRoom(room[0].memberInRoom)
         roomConversation.push({
+          idRoom: room[0]._id,
           name: room[0].name,
           textChat: room[0].textChat,
           memberInRoom:  listMember

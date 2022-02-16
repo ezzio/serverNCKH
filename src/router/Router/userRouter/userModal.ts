@@ -183,3 +183,37 @@ export async function searchSubStringUserName(req: Request, res: Response) {
     res.send({ isSuccess: false });
   }
 }
+
+export const checkRoleUserInProject = async (req: Request, res: Response) => {
+  let { user_name, idProject } = req.body;
+  let infoUser = await user_Schema.find({ user_name: user_name }).lean().exec();
+  let infoUserInProject = await project_Schema.find({
+    $and: [
+      { _id: idProject },
+      {
+        members: {
+          $elemMatch: { idMember: { $eq: infoUser[0]._id } },
+        },
+      },
+    ],
+  });
+
+  if (infoUserInProject.length > 0) {
+    let checnRole = await project_Schema.find(
+      { _id: idProject },
+      {
+        members: {
+          $elemMatch: { idMember: { $eq: infoUser[0]._id } },
+        },
+      }
+    );
+    // console.log(checnRole[0].members);
+    const result = checnRole[0].members.filter(
+      (member) => (member.idMember = infoUser[0]._id)
+    );
+
+    res.send({ isSuccess: true, result });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};

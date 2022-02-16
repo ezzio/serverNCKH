@@ -10,13 +10,16 @@ import {
 
 export default async (listInMemberInRoom: LeanDocument<ObjectId>[]) => {
   let infOListMember: any[] = [];
-  for (const eachUser of listInMemberInRoom) {
-    let infoUser = await User_Schema.find({ _id: eachUser }).lean().exec();
-    infOListMember.push({
-      id: infoUser[0]._id,
-      display_name: infoUser[0].display_name,
-      avatar: infoUser[0].avatar,
-    });
-  }
+  if (listInMemberInRoom.length > 0)
+    for (const eachUser of listInMemberInRoom) {
+      let infoUser = await User_Schema.find({ _id: eachUser }).lean().exec();
+
+      infOListMember.push({
+        id: infoUser[0]._id,
+        display_name: infoUser[0].display_name,
+        avatar: infoUser[0].avatar,
+      });
+    }
+//   console.log(infOListMember);
   return infOListMember;
 };

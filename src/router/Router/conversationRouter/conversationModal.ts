@@ -3,16 +3,24 @@ import { Request, Response } from "express";
 import conversation_Schema from "../../../db/schema/conversation_Schema";
 import Project_Schema from "../../../db/schema/Project_Schema";
 import listMemberInRoom from "../../../db/functionForDB/getInFoUserInArray";
+import User_Schema from "../../../db/schema/User_Schema";
 
 export const createARoomInConversation = async (
   req: Request,
   res: Response
 ) => {
-  let { name, idConversation, memberInRoom } = req.body;
+  let { name, idConversation, memberInRoomUserName } = req.body;
+  let memberInRoom: any[] = [];
+  for (const eachMemberRequest of memberInRoomUserName) {
+    let eachMember = await User_Schema.find({ user_name: eachMemberRequest })
+      .lean()
+      .exec();
+    memberInRoom.push(eachMember[0]._id);
+  }
   new roomConversation_Schema({ name, memberInRoom }).save(
     async (err, modal) => {
       if (!err) {
-        let conversation = await conversation_Schema.updateOne(
+        await conversation_Schema.updateOne(
           {
             $and: [
               { _id: idConversation },
@@ -49,16 +57,15 @@ export const listConversationInProject = async (
           .find({ _id: eachConersation })
           .lean()
           .exec();
+        let listMember = await listMemberInRoom(room[0].memberInRoom)
         roomConversation.push({
           name: room[0].name,
           textChat: room[0].textChat,
-          memberInRoom: listMemberInRoom(room[0].memberInRoom),
+          memberInRoom:  listMember
         });
-
       }
     }
     result.push({ roomName: eachChannal.roomName, roomConversation });
   }
-  // console.log(Listchannel);
-  res.send({ isSuccess: true , result });
+  res.send({ isSuccess: true, result });
 };

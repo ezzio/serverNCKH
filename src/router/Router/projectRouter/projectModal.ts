@@ -403,12 +403,7 @@ export const updateProgressProject = async (req: Request, res: Response) => {
 
 export const deleteProjectWithId = async (req: Request, res: Response) => {
   let request = req.body;
-  let userOwnerProject = await project_Schema.find({ _id: request.idProject }).lean().exec();
 
-  await User_Schema.updateOne(
-    { _id: userOwnerProject[0]._id },
-    { $pull: { InfoAllProjectJoin: request.idProject } }
-  );
   let result = await deletProjectWithId(request.idProject);
   res.send(result ? { isSuccess: true } : { isSuccess: false });
 };

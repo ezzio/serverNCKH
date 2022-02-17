@@ -32,7 +32,7 @@ export const createARoomInConversation = async (
           },
           { $push: { "Listchannel.$.roomConversation": modal._id } }
         );
-        res.send({ isSuccess: true });
+        res.send({ isSuccess: true, modal });
       } else {
         res.send({ isSuccess: false });
       }

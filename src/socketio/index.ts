@@ -1,6 +1,6 @@
 import * as express from "express";
 import conversationInTask_Schema from "../db/schema/conversationInTask";
-import videoCall from "./functionSocket/videoCall";
+import roominconversation_schema from "../db/schema/roomConversation_Schema";
 let userInRoom: any[] = [];
 export default (server: express.Express, app: any) => {
   const io = require("socket.io")(server, {
@@ -31,7 +31,7 @@ export default (server: express.Express, app: any) => {
           $push: {
             textChat: {
               displayName: message.display_name,
-              line_text: message.message ,
+              line_text: message.message,
               user_name: message.user_name,
               avatar: message.avatarURL,
               type: "text",
@@ -41,6 +41,26 @@ export default (server: express.Express, app: any) => {
       );
       socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
+    socket.on("sendMessageConversation", async (message: any) => {
+      let { idRoom, displayName, line_text, user_name, avatar, type, room_id } =
+        message;
+      await roominconversation_schema.updateOne(
+        { _id: idRoom },
+        {
+          $push: {
+            textChat: {
+              user_name,
+              displayName,
+              line_text,
+              avatar,
+              type,
+            },
+          },
+        }
+      );
+      socket.broadcast.to(room_id).emit("newMessagesConversation", message);
+    });
+
     socket.on("disconnect", async () => {
       let index = await userInRoom.findIndex(
         (user) => user.socketId == socket.id

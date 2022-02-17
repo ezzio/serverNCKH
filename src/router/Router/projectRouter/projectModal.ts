@@ -76,6 +76,7 @@ export async function createAProject(req: Request, res: Response) {
         projectOwner: modal._id,
       };
       new conversation_Schema(newConversation).save();
+
       res.send({ isSuccess: true, idProject: modal._id });
     }
   });

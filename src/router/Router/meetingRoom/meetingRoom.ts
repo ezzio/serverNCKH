@@ -18,6 +18,24 @@ export const createMeetingRoom = async (req: Request, res: Response) => {
   });
 };
 
+export const listMeetingRoom = async (req: Request, res: Response) => {
+  let { idProject } = req.body;
+  let infoMeetingRoom: any[] = [];
+  let allMeetingRoom = await meetingRoom
+    .find({ projectowner: idProject })
+    .lean()
+    .exec();
+  if (allMeetingRoom.length > 0)
+    for (const eachMeetingRoom of allMeetingRoom) {
+      infoMeetingRoom.push({
+        id: eachMeetingRoom._id,
+        start_time: eachMeetingRoom.start_time,
+        description: eachMeetingRoom.description,
+      });
+    }
+  res.send({ isSuccess: true, infoMeetingRoom });
+};
+
 export const removeMeeting = async (req: Request, res: Response) => {
   let request = req.body;
   await meetingRoom.deleteOne({ _id: request.idMeetingRoom });

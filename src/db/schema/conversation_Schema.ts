@@ -28,7 +28,7 @@ const conversation_Schema = new Schema({
     ],
     default: [
       {
-        roomName: "workPlace",
+        roomName: "workSpace",
         roomConversation: [],
       },
       {

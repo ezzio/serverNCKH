@@ -15,7 +15,7 @@ app.use(cors({ origin: true }));
 async function main() {
   connection();
 
-  const PORT = process.env.PORT || 4000;
+  const PORT = process.env.PORT || 5000;
 
   server.listen(PORT, () => console.log("server is running at port " + PORT));
   socket(server, app);

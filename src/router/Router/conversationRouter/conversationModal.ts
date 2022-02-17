@@ -9,7 +9,7 @@ export const createARoomInConversation = async (
   req: Request,
   res: Response
 ) => {
-  let { name, idConversation, memberInRoomUserName } = req.body;
+  let { name, idConversation, memberInRoomUserName , roomNameConversation } = req.body;
   let memberInRoom: any[] = [];
   for (const eachMemberRequest of memberInRoomUserName) {
     let eachMember = await User_Schema.find({ user_name: eachMemberRequest })
@@ -24,7 +24,7 @@ export const createARoomInConversation = async (
           {
             $and: [
               { _id: idConversation },
-              { Listchannel: { $elemMatch: { roomName: "workPlace" } } },
+              { Listchannel: { $elemMatch: { roomName: roomNameConversation } } },
             ],
           },
           { $push: { "Listchannel.$.roomConversation": modal._id } }

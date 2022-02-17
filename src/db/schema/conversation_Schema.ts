@@ -36,7 +36,7 @@ const conversation_Schema = new Schema({
         roomConversation: [],
       },
       {
-        roomName: "orthers",
+        roomName: "others",
         roomConversation: [],
       },
     ],

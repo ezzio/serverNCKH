@@ -76,3 +76,19 @@ export const listConversationInProject = async (
     res.send({ isSuccess: false });
   }
 };
+
+export const deleteConversation = async (req: Request, res: Response) => {
+  let { idRoom, idConversation, roomNameConversation } = req.body;
+  await conversation_Schema.updateOne(
+    {
+      $and: [
+        { _id: idConversation },
+        {
+          Listchannel: { $elemMatch: { roomName: roomNameConversation } },
+        },
+      ],
+    },
+    { $pull: { "Listchannel.$.roomConversation": idRoom } }
+  );
+  res.send({ isSuccess: true });
+};

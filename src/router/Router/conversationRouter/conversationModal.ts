@@ -9,7 +9,8 @@ export const createARoomInConversation = async (
   req: Request,
   res: Response
 ) => {
-  let { name, idConversation, memberInRoomUserName , roomNameConversation } = req.body;
+  let { name, idConversation, memberInRoomUserName, roomNameConversation } =
+    req.body;
   let memberInRoom: any[] = [];
   for (const eachMemberRequest of memberInRoomUserName) {
     let eachMember = await User_Schema.find({ user_name: eachMemberRequest })
@@ -24,7 +25,9 @@ export const createARoomInConversation = async (
           {
             $and: [
               { _id: idConversation },
-              { Listchannel: { $elemMatch: { roomName: roomNameConversation } } },
+              {
+                Listchannel: { $elemMatch: { roomName: roomNameConversation } },
+              },
             ],
           },
           { $push: { "Listchannel.$.roomConversation": modal._id } }
@@ -47,26 +50,29 @@ export const listConversationInProject = async (
     .find({ projectOwner: idProject })
     .lean()
     .exec();
-
-  let Listchannel = findProject[0].Listchannel;
-  for (const eachChannal of Listchannel) {
-    let roomConversation: any[] = [];
-    if (eachChannal.roomConversation.length > 0) {
-      for (const eachConersation of eachChannal.roomConversation) {
-        let room = await roomConversation_Schema
-          .find({ _id: eachConersation })
-          .lean()
-          .exec();
-        let listMember = await listMemberInRoom(room[0].memberInRoom);
-        roomConversation.push({
-          idRoom: room[0]._id,
-          name: room[0].name,
-          textChat: room[0].textChat,
-          memberInRoom: listMember,
-        });
+  if (findProject.length > 0) {
+    let Listchannel = findProject[0].Listchannel;
+    for (const eachChannal of Listchannel) {
+      let roomConversation: any[] = [];
+      if (eachChannal.roomConversation.length > 0) {
+        for (const eachConersation of eachChannal.roomConversation) {
+          let room = await roomConversation_Schema
+            .find({ _id: eachConersation })
+            .lean()
+            .exec();
+          let listMember = await listMemberInRoom(room[0].memberInRoom);
+          roomConversation.push({
+            idRoom: room[0]._id,
+            name: room[0].name,
+            textChat: room[0].textChat,
+            memberInRoom: listMember,
+          });
+        }
       }
+      result.push({ roomName: eachChannal.roomName, roomConversation });
     }
-    result.push({ roomName: eachChannal.roomName, roomConversation });
+    res.send({ isSuccess: true, result });
+  } else {
+    res.send({ isSuccess: false });
   }
-  res.send({ isSuccess: true, result });
 };

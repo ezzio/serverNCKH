@@ -77,6 +77,19 @@ export const listConversationInProject = async (
   }
 };
 
+export const listMessageInRoom = async (req: Request, res: Response) => {
+  let { idRoom } = req.body;
+  let infoRoom = await roomConversation_Schema
+    .find({ _id: idRoom })
+    .lean()
+    .exec();
+  if (infoRoom.length > 0) {
+    res.send({ isSuccess: true, infoRoom });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
+
 export const deleteConversation = async (req: Request, res: Response) => {
   let { idRoom, idConversation, roomNameConversation } = req.body;
   await conversation_Schema.updateOne(

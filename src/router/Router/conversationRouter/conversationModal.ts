@@ -71,7 +71,7 @@ export const listConversationInProject = async (
       }
       result.push({ roomName: eachChannal.roomName, roomConversation });
     }
-    res.send({ isSuccess: true, result });
+    res.send({ isSuccess: true, result, idConversation: findProject[0]._id });
   } else {
     res.send({ isSuccess: false });
   }

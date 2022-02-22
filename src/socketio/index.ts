@@ -23,6 +23,19 @@ export default (server: express.Express, app: any) => {
       }
       socket.join(data.room_id);
     });
+    socket.on("chat-connectToRoomConversation", (data: any) => {
+      console.log("connect vao room");
+      let index = userInRoom.findIndex((user) => user.idUser === data.id);
+      if (index == -1) {
+        userInRoom.push({
+          socketId: socket.id,
+          idUser: data.id,
+        });
+      } else {
+        userInRoom[index].socketId = socket.id;
+      }
+      socket.join(data.room_id);
+    });
 
     socket.on("sendMessage", async (message: any) => {
       await conversationInTask_Schema.updateOne(
@@ -42,23 +55,26 @@ export default (server: express.Express, app: any) => {
       socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
     socket.on("sendMessageConversation", async (message: any) => {
-      let { idRoom, displayName, line_text, user_name, avatar, type, room_id } =
-        message;
+      let { display_name, mess, user_name, avatarURL, type, room_id } = message;
+      console.log(message);
+      let findRoomConversation = await roominconversation_schema.find({_id: room_id}).lean().exec();
+      console.log(findRoomConversation);
       await roominconversation_schema.updateOne(
-        { _id: idRoom },
+        { _id: room_id },
         {
           $push: {
             textChat: {
-              user_name,
-              displayName,
-              line_text,
-              avatar,
-              type,
+              displayName: display_name,
+              line_text: mess,
+              user_name: user_name,
+              avatar: avatarURL,
+              type: type,
             },
           },
         }
       );
       socket.broadcast.to(room_id).emit("newMessagesConversation", message);
+      console.log(message);
     });
 
     socket.on("disconnect", async () => {

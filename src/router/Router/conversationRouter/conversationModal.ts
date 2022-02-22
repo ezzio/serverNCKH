@@ -105,3 +105,38 @@ export const deleteConversation = async (req: Request, res: Response) => {
   );
   res.send({ isSuccess: true });
 };
+
+export const listRoomConversation = async (req: Request, res: Response) => {
+  console.log("hello");
+  let { idRoomConversation } = req.body;
+  let roomInfo = await roomConversation_Schema
+    .find({ _id: idRoomConversation })
+    .lean()
+    .exec();
+  if (roomInfo.length > 0) {
+    let memberInRoom: any[] = [];
+    for (const eachMemberInRoomConversation of roomInfo[0].memberInRoom) {
+      let userInRoom = await User_Schema.find({
+        _id: eachMemberInRoomConversation,
+      })
+        .lean()
+        .exec();
+      if (userInRoom) {
+        memberInRoom.push({
+          user_name: userInRoom[0].user_name,
+          avatar: userInRoom[0].avatar,
+        });
+      }
+    }
+    res.send({
+      isSuccess: true,
+      infoRoom: {
+        roomName: roomInfo[0].name,
+        memberInRoom,
+        textChat: roomInfo[0].textChat,
+      },
+    });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};

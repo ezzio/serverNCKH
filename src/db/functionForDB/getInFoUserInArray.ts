@@ -21,3 +21,4 @@ export default async (listInMemberInRoom: LeanDocument<ObjectId>[]) => {
     }
   return infOListMember;
 };
+

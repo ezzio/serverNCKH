@@ -3,7 +3,7 @@ export default interface roomConversation extends Document {
   name: String;
   textChat: [
     {
-      iduser: ObjectId;
+      idUser: ObjectId;
       line_text: string;
       type: string;
     }

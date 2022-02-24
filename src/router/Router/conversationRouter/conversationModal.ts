@@ -4,7 +4,7 @@ import conversation_Schema from "../../../db/schema/conversation_Schema";
 import Project_Schema from "../../../db/schema/Project_Schema";
 import listMemberInRoom from "../../../db/functionForDB/getInFoUserInArray";
 import User_Schema from "../../../db/schema/User_Schema";
-
+import converTextChat from "../../../db/functionForDB/convertTextChat";
 export const createARoomInConversation = async (
   req: Request,
   res: Response
@@ -61,6 +61,8 @@ export const listConversationInProject = async (
             .lean()
             .exec();
           let listMember = await listMemberInRoom(room[0].memberInRoom);
+          // let textChatConvert = await converTextChat(room[0].textChat)
+          // console.log(room[0].textChat)
           roomConversation.push({
             idRoom: room[0]._id,
             name: room[0].name,
@@ -127,6 +129,9 @@ export const listRoomConversation = async (req: Request, res: Response) => {
         });
       }
     }
+    // console.log(roomInfo[0].textChat);
+    let convertText = await converTextChat(roomInfo[0].textChat);
+    console.log(convertText);
     res.send({
       isSuccess: true,
       infoRoom: {

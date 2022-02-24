@@ -24,7 +24,7 @@ export default (server: express.Express, app: any) => {
       socket.join(data.room_id);
     });
     socket.on("chat-connectToRoomConversation", (data: any) => {
-      console.log("connect vao room");
+      // console.log("connect vao room");
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
         userInRoom.push({
@@ -61,7 +61,7 @@ export default (server: express.Express, app: any) => {
         .find({ _id: room_id })
         .lean()
         .exec();
-      console.log(findRoomConversation);
+      // console.log(findRoomConversation);
       await roominconversation_schema.updateOne(
         { _id: room_id },
         {

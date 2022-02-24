@@ -137,7 +137,7 @@ export const listRoomConversation = async (req: Request, res: Response) => {
       infoRoom: {
         roomName: roomInfo[0].name,
         memberInRoom,
-        textChat: roomInfo[0].textChat,
+        textChat: convertText,
       },
     });
   } else {

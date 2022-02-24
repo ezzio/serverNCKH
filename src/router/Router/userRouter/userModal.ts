@@ -224,7 +224,6 @@ export const getInfoByUserName = async (req: Request, res: Response) => {
   let projectOwner = [];
   let userInfo = await user_Schema.find({ user_name: user_name }).find().exec();
   if (userInfo.length > 0) {
-
     result.push({
       userInfo: {
         username: userInfo[0].user_name,
@@ -273,6 +272,6 @@ export const getInfoByUserName = async (req: Request, res: Response) => {
   }
   //find task have user
 
-  await result.push({projectOwner});
+  await result.push({ projectOwner });
   res.send(result);
 };

@@ -25,11 +25,13 @@ export default async (
     let userChat = await User_Schema.find({ _id: eachText.idUser })
       .lean()
       .exec();
+    console.log(eachText)
     resultTextChat.push({
       line_text: eachText.line_text,
       avatar: userChat[0].avatar,
       displayName: userChat[0].display_name,
       user_name: userChat[0].user_name,
+      sendAt: eachText.eachText,
       type: eachText.type,
     });
   }

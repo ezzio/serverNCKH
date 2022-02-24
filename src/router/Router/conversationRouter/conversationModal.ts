@@ -107,7 +107,6 @@ export const deleteConversation = async (req: Request, res: Response) => {
 };
 
 export const listRoomConversation = async (req: Request, res: Response) => {
-  console.log("hello");
   let { idRoomConversation } = req.body;
   let roomInfo = await roomConversation_Schema
     .find({ _id: idRoomConversation })

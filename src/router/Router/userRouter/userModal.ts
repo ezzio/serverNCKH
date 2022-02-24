@@ -217,3 +217,62 @@ export const checkRoleUserInProject = async (req: Request, res: Response) => {
     res.send({ isSuccess: false });
   }
 };
+
+export const getInfoByUserName = async (req: Request, res: Response) => {
+  let { user_name } = req.body;
+  let result = [];
+  let allProject = [];
+  let userInfo = await user_Schema.find({ user_name: user_name }).find().exec();
+  if (userInfo.length > 0) {
+    result.push({
+      userInfo: {
+        username: userInfo[0].user_name,
+        displayName: userInfo[0].display_name || "",
+        avatarURL: userInfo[0].avatar,
+        bio: userInfo[0].bio || "",
+        company: userInfo[0].company || "",
+        email: userInfo[0].email || "",
+
+        address: userInfo[0].address || "",
+      },
+    });
+  }
+  /// find project of User
+  let projectUserJoin = await project_Schema
+    .find({
+      "members.idMember": { $in: userInfo[0]._id },
+    })
+    .lean()
+    .exec();
+  // project user join
+  for (let eachIdProject of projectUserJoin) {
+    let project = await project_Schema
+      .find({ _id: eachIdProject })
+      .lean()
+      .exec();
+    let memberInRoom = [];
+    for (let eachMember of project[0].members) {
+      let member = await user_Schema
+        .find({ _id: eachMember.idMember })
+        .find()
+        .exec();
+      if (member) {
+        memberInRoom.push({
+          username: member[0].user_name,
+          avatar: member[0].avatar,
+        });
+      }
+    }
+
+    allProject.push({
+      title: project[0].name,
+      members: memberInRoom,
+    });
+  }
+  //find task have user
+
+  await result.push({
+    projectOwner: allProject,
+  });
+  res.send(result);
+};

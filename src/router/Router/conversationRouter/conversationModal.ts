@@ -125,7 +125,8 @@ export const listRoomConversation = async (req: Request, res: Response) => {
       if (userInRoom) {
         memberInRoom.push({
           user_name: userInRoom[0].user_name,
-          avatar: userInRoom[0].avatar,
+          user_displayName: userInRoom[0].display_name,
+          avatarUrl: userInRoom[0].avatar,
         });
       }
     }

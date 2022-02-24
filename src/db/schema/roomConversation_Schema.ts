@@ -4,10 +4,8 @@ const roomInConversation_Schema = new Schema({
   name: { type: String, required: true },
   textChat: [
     {
-      displayName: { type: String },
       line_text: { type: String },
-      user_name: { type: String },
-      avatar: { type: String },
+      idUser: { type: Schema.Types.ObjectId , required: true },
       sendAt: { type: Date, default: Date.now },
       type: { type: String },
     },

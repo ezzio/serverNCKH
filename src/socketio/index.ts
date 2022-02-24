@@ -55,19 +55,20 @@ export default (server: express.Express, app: any) => {
       socket.broadcast.to(message.room_id).emit("newMessages", message);
     });
     socket.on("sendMessageConversation", async (message: any) => {
-      let { display_name, mess, user_name, avatarURL, type, room_id } = message;
-      console.log(message);
-      let findRoomConversation = await roominconversation_schema.find({_id: room_id}).lean().exec();
+      let { mess, idUser, type, room_id } = message;
+
+      let findRoomConversation = await roominconversation_schema
+        .find({ _id: room_id })
+        .lean()
+        .exec();
       console.log(findRoomConversation);
       await roominconversation_schema.updateOne(
         { _id: room_id },
         {
           $push: {
             textChat: {
-              displayName: display_name,
               line_text: mess,
-              user_name: user_name,
-              avatar: avatarURL,
+              idUser: idUser,
               type: type,
             },
           },

@@ -46,7 +46,6 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
       let listUserNameInMeeting = await getInFoUserInArray(
         eachMeetingRoom.in_meeting
       );
-      // console.log(eachMeetingRoom)
       let resultMember = listUserNameInMeeting.map((items) => {
         return {
           display_name: items.display_name,
@@ -55,6 +54,7 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
       });
       infoMeetingRoom.push({
         id: eachMeetingRoom._id,
+        name: eachMeetingRoom.name,
         start_time: eachMeetingRoom.start_time,
         description: eachMeetingRoom.description,
         members: resultMember,

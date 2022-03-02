@@ -1,12 +1,28 @@
+import User_Schema from "../../../db/schema/User_Schema";
 import { Request, Response } from "express";
+import { ObjectId } from "mongoose";
 import meetingRoom from "../../../db/schema/meetingSchema";
+import getInFoUserInArray from "../../../db/functionForDB/getInFoUserInArray";
 export const createMeetingRoom = async (req: Request, res: Response) => {
   let request = req.body;
+  let memberInMeeting: ObjectId[] = [];
+
+  if (request.memberInMeetingRoom.length > 0) {
+    for (const eachMemberInRoom of request.memberInMeetingRoom) {
+      let findIdUser = await User_Schema.find({
+        user_name: eachMemberInRoom,
+      })
+        .lean()
+        .exec();
+      memberInMeeting.push(findIdUser[0]._id);
+    }
+  }
   let newMeetingRoom = {
     name: request.name,
     description: request.description,
     timeStartMeeting: request.timeStartMeeting,
     projectowner: request.projectowner,
+    in_meeting: memberInMeeting,
   };
   let newMeeting = new meetingRoom(newMeetingRoom);
   await newMeeting.save((error, modal) => {
@@ -27,10 +43,21 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
     .exec();
   if (allMeetingRoom.length > 0)
     for (const eachMeetingRoom of allMeetingRoom) {
+      let listUserNameInMeeting = await getInFoUserInArray(
+        eachMeetingRoom.in_meeting
+      );
+      // console.log(eachMeetingRoom)
+      let resultMember = listUserNameInMeeting.map((items) => {
+        return {
+          display_name: items.display_name,
+          avatar: items.avatar,
+        };
+      });
       infoMeetingRoom.push({
         id: eachMeetingRoom._id,
         start_time: eachMeetingRoom.start_time,
         description: eachMeetingRoom.description,
+        members: resultMember,
       });
     }
   res.send({ isSuccess: true, infoMeetingRoom });

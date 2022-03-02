@@ -10,6 +10,7 @@ import kanbanRouter from "./Router/kanbanDashBoard";
 import zipRouter from "./Router/zipFileRouter";
 import dashboardRouter from "./Router/dashboard";
 import conversationRouter from './Router/conversationRouter'
+import meetingRoomRouter from './Router/meetingRoom'
 
 export default (app: express.Express) => {
   app.use("/login", signInRouter);
@@ -23,4 +24,5 @@ export default (app: express.Express) => {
   app.use("/kanban", kanbanRouter);
   app.use("/dashboard", dashboardRouter);
   app.use("/conversation", conversationRouter);
+  app.use('/MeetingRoom',meetingRoomRouter )
 };

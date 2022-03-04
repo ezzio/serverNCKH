@@ -15,10 +15,10 @@ export default async (listInMemberInRoom: LeanDocument<ObjectId>[]) => {
       let infoUser = await User_Schema.find({ _id: eachUser }).lean().exec();
       infOListMember.push({
         id: infoUser[0]._id,
+        user_name: infoUser[0].user_name,
         display_name: infoUser[0].display_name,
         avatar: infoUser[0].avatar,
       });
     }
   return infOListMember;
 };
-

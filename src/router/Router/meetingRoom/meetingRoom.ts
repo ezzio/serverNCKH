@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { ObjectId } from "mongoose";
 import meetingRoom from "../../../db/schema/meetingSchema";
 import getInFoUserInArray from "../../../db/functionForDB/getInFoUserInArray";
+import Project_Schema from "../../../db/schema/Project_Schema";
 export const createMeetingRoom = async (req: Request, res: Response) => {
   let request = req.body;
   let memberInMeeting: ObjectId[] = [];
@@ -37,6 +38,10 @@ export const createMeetingRoom = async (req: Request, res: Response) => {
 export const listMeetingRoom = async (req: Request, res: Response) => {
   let { idProject } = req.body;
   let infoMeetingRoom: any[] = [];
+  let infoProject = await Project_Schema.find({ _id: idProject }).lean().exec();
+  let memberInMeetingRoom = await getInFoUserInArray(
+    infoProject[0].members.map((items) => items.idMember)
+  );
   let allMeetingRoom = await meetingRoom
     .find({ projectowner: idProject })
     .lean()
@@ -60,7 +65,17 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
         members: resultMember,
       });
     }
-  res.send({ isSuccess: true, infoMeetingRoom });
+  res.send({
+    isSuccess: true,
+    infoMeetingRoom,
+    memberInProject: memberInMeetingRoom.map((items) => {
+      return {
+        display_name: items.display_name,
+        user_name: items.user_name,
+        avatar: items.avatar,
+      };
+    }),
+  });
 };
 
 export const removeMeeting = async (req: Request, res: Response) => {

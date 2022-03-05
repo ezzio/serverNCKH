@@ -22,6 +22,8 @@ export const createMeetingRoom = async (req: Request, res: Response) => {
     name: request.name,
     description: request.description,
     timeStartMeeting: request.timeStartMeeting,
+    start_time: request.start_time,
+    end_time: request.end_time,
     projectowner: request.projectowner,
     in_meeting: memberInMeeting,
   };
@@ -61,6 +63,8 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
         id: eachMeetingRoom._id,
         name: eachMeetingRoom.name,
         start_time: eachMeetingRoom.start_time,
+        end_time: eachMeetingRoom.end_time,
+        timeStartMeeting: eachMeetingRoom.timeStartMeeting,
         description: eachMeetingRoom.description,
         members: resultMember,
       });

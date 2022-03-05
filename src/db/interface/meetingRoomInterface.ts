@@ -5,4 +5,6 @@ export default interface meetingRoomInterface extends Document {
   description: String;
   projectowner: ObjectId;
   start_time: Date;
+  end_time: Date;
+  timeStartMeeting: Date;
 }

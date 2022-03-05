@@ -61,7 +61,6 @@ export default (server: express.Express, app: any) => {
         .find({ _id: room_id })
         .lean()
         .exec();
-      // console.log(findRoomConversation);
       await roominconversation_schema.updateOne(
         { _id: room_id },
         {

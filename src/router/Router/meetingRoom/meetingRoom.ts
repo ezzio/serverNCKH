@@ -85,7 +85,7 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
 export const removeMeeting = async (req: Request, res: Response) => {
   let request = req.body;
   await meetingRoom.deleteOne({ _id: request.idMeetingRoom });
-  res.send({ isSuccess: true });
+  res.send({ isSuccess: true, idRoomRemove: request.idMeetingRoom });
 };
 
 export const setTimeForMeetingRoom = async (req: Request, res: Response) => {

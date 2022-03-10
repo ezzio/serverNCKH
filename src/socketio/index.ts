@@ -74,7 +74,6 @@ export default (server: express.Express, app: any) => {
         }
       );
       socket.broadcast.to(room_id).emit("newMessagesConversation", message);
-      console.log(message);
     });
 
     socket.on("disconnect", async () => {

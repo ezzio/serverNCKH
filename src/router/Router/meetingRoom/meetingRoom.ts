@@ -38,9 +38,10 @@ export const createMeetingRoom = async (req: Request, res: Response) => {
 };
 
 export const listMeetingRoom = async (req: Request, res: Response) => {
-  let { idProject } = req.body;
+  let { idProject, idUser } = req.body;
   let infoMeetingRoom: any[] = [];
   let infoProject = await Project_Schema.find({ _id: idProject }).lean().exec();
+  let infoUsername = await User_Schema.find({ _id: idUser }).lean().exec();
   let memberInMeetingRoom = await getInFoUserInArray(
     infoProject[0].members.map((items) => items.idMember)
   );
@@ -72,6 +73,7 @@ export const listMeetingRoom = async (req: Request, res: Response) => {
   res.send({
     isSuccess: true,
     infoMeetingRoom,
+    infoUsername,
     memberInProject: memberInMeetingRoom.map((items) => {
       return {
         display_name: items.display_name,

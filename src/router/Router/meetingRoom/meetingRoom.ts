@@ -98,3 +98,20 @@ export const setTimeForMeetingRoom = async (req: Request, res: Response) => {
   );
   res.send({ isSuccess: true });
 };
+
+export const GetListMemBersWhenJoinRoom = async (
+  req: Request,
+  res: Response
+) => {
+  let { idMeetingRoom } = req.body;
+  let listMemberInMeetingRoom = await meetingRoom
+    .find({ _id: idMeetingRoom })
+    .lean()
+    .exec();
+  let memberInMeetingRoom = await getInFoUserInArray(
+    listMemberInMeetingRoom[0].in_meeting
+  );
+
+  console.log(listMemberInMeetingRoom);
+  res.send({ isSuccess: true, memberInMeetingRoom });
+};

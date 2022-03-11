@@ -112,6 +112,14 @@ export const GetListMemBersWhenJoinRoom = async (
     listMemberInMeetingRoom[0].in_meeting
   );
 
-  let infoUser = await getInFoUserInArray(idUser);
-  res.send({ isSuccess: true, memberInMeetingRoom, infoUser });
+  let infoUser = await User_Schema.find({ _id: idUser }).lean().exec();
+  res.send({
+    isSuccess: true,
+    memberInMeetingRoom,
+    infoUser: {
+      user_name: infoUser[0].user_name,
+      avatar: infoUser[0].avatar,
+      display_name:infoUser[0].display_name
+    },
+  });
 };

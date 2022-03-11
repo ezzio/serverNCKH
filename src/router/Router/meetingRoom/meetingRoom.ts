@@ -103,7 +103,7 @@ export const GetListMemBersWhenJoinRoom = async (
   req: Request,
   res: Response
 ) => {
-  let { idMeetingRoom } = req.body;
+  let { idMeetingRoom, idUser } = req.body;
   let listMemberInMeetingRoom = await meetingRoom
     .find({ _id: idMeetingRoom })
     .lean()
@@ -112,6 +112,6 @@ export const GetListMemBersWhenJoinRoom = async (
     listMemberInMeetingRoom[0].in_meeting
   );
 
-  console.log(listMemberInMeetingRoom);
-  res.send({ isSuccess: true, memberInMeetingRoom });
+  let infoUser = await getInFoUserInArray(idUser);
+  res.send({ isSuccess: true, memberInMeetingRoom, infoUser });
 };

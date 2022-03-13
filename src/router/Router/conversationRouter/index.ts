@@ -4,7 +4,8 @@ import {
   listConversationInProject,
   listRoomConversation,
   deleteConversation,
-  inviteMemberIntoRoomChat
+  inviteMemberIntoRoomChat,
+  renameChannelChat,
 } from "./conversationModal";
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.post("/listConversationInProject", listConversationInProject);
 router.post("/deletRoomInConversation", deleteConversation);
 router.post("/listRoomConversation", listRoomConversation);
 router.post("/inviteMemberToChannel", inviteMemberIntoRoomChat);
+router.post("/renameChannel", renameChannelChat);
 
 export default router;

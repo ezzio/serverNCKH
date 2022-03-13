@@ -164,13 +164,12 @@ export const renameChannelChat = async (req: Request, res: Response) => {
     .updateOne({ _id: idRoom }, { $set: { name: nameChange } })
     .exec((error, modal) => {
       if (!error) {
-        res.send({ isSuccess: true, modal });
+        res.send({ isSuccess: true });
       } else {
         res.send({ isSuccess: false });
       }
     });
 
-  res.send({ isSuccess: false });
 };
 
 export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {

@@ -5,6 +5,8 @@ import Project_Schema from "../../../db/schema/Project_Schema";
 import listMemberInRoom from "../../../db/functionForDB/getInFoUserInArray";
 import User_Schema from "../../../db/schema/User_Schema";
 import converTextChat from "../../../db/functionForDB/convertTextChat";
+import { ObjectId } from "mongoose";
+import { info } from "console";
 export const createARoomInConversation = async (
   req: Request,
   res: Response
@@ -93,11 +95,18 @@ export const listMessageInRoom = async (req: Request, res: Response) => {
 };
 
 export const deleteConversation = async (req: Request, res: Response) => {
-  let { idRoom, idConversation, roomNameConversation } = req.body;
+  let { idRoom, idProject, roomNameConversation } = req.body;
+  let idConversation = await conversation_Schema
+    .find({
+      projectOwner: idProject,
+    })
+    .lean()
+    .exec();
+
   await conversation_Schema.updateOne(
     {
       $and: [
-        { _id: idConversation },
+        { _id: idConversation[0]._id },
         {
           Listchannel: { $elemMatch: { roomName: roomNameConversation } },
         },
@@ -105,6 +114,8 @@ export const deleteConversation = async (req: Request, res: Response) => {
     },
     { $pull: { "Listchannel.$.roomConversation": idRoom } }
   );
+
+  await roomConversation_Schema.deleteOne({ _id: idRoom });
   res.send({ isSuccess: true });
 };
 
@@ -132,7 +143,7 @@ export const listRoomConversation = async (req: Request, res: Response) => {
     }
     // console.log(roomInfo[0].textChat);
     let convertText = await converTextChat(roomInfo[0].textChat);
- 
+
     res.send({
       isSuccess: true,
       infoRoom: {
@@ -141,6 +152,43 @@ export const listRoomConversation = async (req: Request, res: Response) => {
         textChat: convertText,
       },
     });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
+
+export const renameChannelChat = async (req: Request, res: Response) => {
+  let { idRoom, nameChange } = req.body;
+
+  await roomConversation_Schema
+    .updateOne({ _id: idRoom }, { $set: { name: nameChange } })
+    .exec((error, modal) => {
+      if (!error) {
+        res.send({ isSuccess: true, modal });
+      } else {
+        res.send({ isSuccess: false });
+      }
+    });
+
+  res.send({ isSuccess: false });
+};
+
+export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {
+  let { idRoom, listUserInviteToChannel } = req.body;
+
+  if (listUserInviteToChannel.legnth > 0) {
+    let listIdInRoom: Array<ObjectId> = [];
+    for (const eachUserName of listUserInviteToChannel) {
+      let infoUSer = await User_Schema.find({ user_name: eachUserName })
+        .lean()
+        .exec();
+      listIdInRoom.push(infoUSer[0]._id);
+    }
+    await roomConversation_Schema.updateOne(
+      { _id: idRoom },
+      { $set: { memberInRoom: listIdInRoom } }
+    );
+    res.send({ isSuccess: true });
   } else {
     res.send({ isSuccess: false });
   }

@@ -175,8 +175,8 @@ export const renameChannelChat = async (req: Request, res: Response) => {
 
 export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {
   let { idRoom, listUserInviteToChannel } = req.body;
-
-  if (listUserInviteToChannel.legnth > 0) {
+  console.log(listUserInviteToChannel.length > 0);
+  if (listUserInviteToChannel.length > 0) {
     let listIdInRoom: Array<ObjectId> = [];
     for (const eachUserName of listUserInviteToChannel) {
       let infoUSer = await User_Schema.find({ user_name: eachUserName })

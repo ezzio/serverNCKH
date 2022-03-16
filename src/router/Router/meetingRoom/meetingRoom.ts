@@ -117,7 +117,7 @@ export const GetListMemBersWhenJoinRoom = async (
     isSuccess: true,
     memberInMeetingRoom,
     name: listMemberInMeetingRoom[0].name,
-    startTime: listMemberInMeetingRoom[0].timeStartMeeting,
+    startTime: listMemberInMeetingRoom[0].start_time,
     infoUser: {
       user_name: infoUser[0].user_name,
       avatar: infoUser[0].avatar,

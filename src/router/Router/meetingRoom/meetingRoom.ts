@@ -116,6 +116,8 @@ export const GetListMemBersWhenJoinRoom = async (
   res.send({
     isSuccess: true,
     memberInMeetingRoom,
+    name: listMemberInMeetingRoom[0].name,
+    startTime: listMemberInMeetingRoom[0].timeStartMeeting,
     infoUser: {
       user_name: infoUser[0].user_name,
       avatar: infoUser[0].avatar,

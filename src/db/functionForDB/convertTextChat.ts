@@ -9,6 +9,7 @@ import {
 import User_Schema from "../../db/schema/User_Schema";
 export default async (
   textChat: LeanDocument<{
+    _id: ObjectId;
     idUser: ObjectId;
     line_text: string;
     type: string;
@@ -16,6 +17,7 @@ export default async (
   }>[]
 ) => {
   let resultTextChat: Array<{
+    _id: ObjectId;
     line_text: string;
     avatar: string;
     displayName: string;
@@ -27,8 +29,9 @@ export default async (
     let userChat = await User_Schema.find({ _id: eachText.idUser })
       .lean()
       .exec();
-    console.log(eachText);
+  
     resultTextChat.push({
+      _id: eachText._id,
       line_text: eachText.line_text,
       avatar: userChat[0].avatar,
       displayName: userChat[0].display_name,

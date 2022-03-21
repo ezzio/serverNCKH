@@ -141,7 +141,7 @@ export const listRoomConversation = async (req: Request, res: Response) => {
         });
       }
     }
-    // console.log(roomInfo[0].textChat);
+
     let convertText = await converTextChat(roomInfo[0].textChat);
 
     res.send({
@@ -192,3 +192,8 @@ export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {
     res.send({ isSuccess: false });
   }
 };
+
+export const likeTextChat = async (req: Request, res: Response)=> {
+  let {} = req.body;
+
+}

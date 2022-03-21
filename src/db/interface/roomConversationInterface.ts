@@ -9,7 +9,7 @@ export default interface roomConversation extends Document {
       type: string;
       sendAt: Date;
       like: ObjectId[];
-      dislikes: ObjectId[];
+      dislike: ObjectId[];
       replyMessage: [{ textChat: ""; whoReply: ObjectId }];
     }
   ];

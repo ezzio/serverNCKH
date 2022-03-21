@@ -9,7 +9,7 @@ const roomInConversation_Schema = new Schema({
       sendAt: { type: Date, default: Date.now },
       type: { type: String },
       like: [{ type: Schema.Types.ObjectId }],
-      dislikes: [{ type: Schema.Types.ObjectId }],
+      dislike: [{ type: Schema.Types.ObjectId }],
       replyMessage: [
         {
           textChat: { type: String },

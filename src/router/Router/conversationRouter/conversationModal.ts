@@ -169,12 +169,11 @@ export const renameChannelChat = async (req: Request, res: Response) => {
         res.send({ isSuccess: false });
       }
     });
-
 };
 
 export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {
   let { idRoom, listUserInviteToChannel } = req.body;
-  console.log(listUserInviteToChannel.length > 0);
+
   if (listUserInviteToChannel.length > 0) {
     let listIdInRoom: Array<ObjectId> = [];
     for (const eachUserName of listUserInviteToChannel) {
@@ -193,7 +192,82 @@ export const inviteMemberIntoRoomChat = async (req: Request, res: Response) => {
   }
 };
 
-export const likeTextChat = async (req: Request, res: Response)=> {
-  let {} = req.body;
+export const likeAndDislikeTextChat = async (req: Request, res: Response) => {
+  let { idRoom, idTextChat, idUser, type } = req.body;
+  let pushType = type.toLowerCase();
+  let findTextChat = await roomConversation_Schema
+    .find({
+      $and: [
+        { _id: idRoom },
+        { textChat: { $elemMatch: { _id: idTextChat } } },
+      ],
+    })
+    .lean()
+    .exec();
+  if (findTextChat.length > 0) {
+    if (pushType === "like") {
+      await roomConversation_Schema.updateOne(
+        {
+          $and: [
+            { _id: idRoom },
+            { textChat: { $elemMatch: { _id: idTextChat } } },
+          ],
+        },
+        {
+          $push: { "textChat.$.like": idUser },
+        }
+      );
+    } else {
+      await roomConversation_Schema.updateOne(
+        {
+          $and: [
+            { _id: idRoom },
+            { textChat: { $elemMatch: { _id: idTextChat } } },
+          ],
+        },
+        {
+          $push: { "textChat.$.dislike": idUser },
+        }
+      );
+    }
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};
 
-}
+export const replyMessageInConversation = async (
+  req: Request,
+  res: Response
+) => {
+  let { idRoom, idTextChat, idUser, messageReply } = req.body;
+  let findTextChat = await roomConversation_Schema
+    .find({
+      $and: [
+        { _id: idRoom },
+        { textChat: { $elemMatch: { _id: idTextChat } } },
+      ],
+    })
+    .lean()
+    .exec();
+  if (findTextChat.length > 0) {
+    let newReply = {
+      textChat: messageReply,
+      whoReply: idUser,
+    };
+    await roomConversation_Schema.updateOne(
+      {
+        $and: [
+          { _id: idRoom },
+          { textChat: { $elemMatch: { _id: idTextChat } } },
+        ],
+      },
+      {
+        $push: { "textChat.$.replyMessage": newReply },
+      }
+    );
+    res.send({ isSuccess: true });
+  } else {
+    res.send({ isSuccess: false });
+  }
+};

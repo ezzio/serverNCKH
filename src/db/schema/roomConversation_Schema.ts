@@ -5,9 +5,17 @@ const roomInConversation_Schema = new Schema({
   textChat: [
     {
       line_text: { type: String },
-      idUser: { type: Schema.Types.ObjectId , required: true },
+      idUser: { type: Schema.Types.ObjectId, required: true },
       sendAt: { type: Date, default: Date.now },
       type: { type: String },
+      like: [{ type: Schema.Types.ObjectId }],
+      dislikes: [{ type: Schema.Types.ObjectId }],
+      replyMessage: [
+        {
+          textChat: { type: String },
+          whoReply: { type: Schema.Types.ObjectId },
+        },
+      ],
     },
   ],
   memberInRoom: [{ type: Schema.Types.ObjectId }],

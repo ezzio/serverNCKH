@@ -14,6 +14,7 @@ const roomInConversation_Schema = new Schema({
         {
           textChat: { type: String },
           whoReply: { type: Schema.Types.ObjectId },
+          replyAt: { type: Date, default: Date.now },
         },
       ],
     },

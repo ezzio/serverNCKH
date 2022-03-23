@@ -143,7 +143,7 @@ export const listRoomConversation = async (req: Request, res: Response) => {
     }
 
     let convertText = await converTextChat(roomInfo[0].textChat);
-
+    
     res.send({
       isSuccess: true,
       infoRoom: {

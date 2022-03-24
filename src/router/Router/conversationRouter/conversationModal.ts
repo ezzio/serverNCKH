@@ -143,7 +143,7 @@ export const listRoomConversation = async (req: Request, res: Response) => {
     }
 
     let convertText = await converTextChat(roomInfo[0].textChat);
-    
+
     res.send({
       isSuccess: true,
       infoRoom: {
@@ -270,4 +270,22 @@ export const replyMessageInConversation = async (
   } else {
     res.send({ isSuccess: false });
   }
+};
+
+export const getInfoUser = async (req: Request, res: Response) => {
+  let { idUSer } = req.body;
+  let infoUser = await User_Schema.find({ _id: idUSer }).lean().exec();
+  if (infoUser.length > 0) {
+    res.send({
+      isSuccess: true,
+      infoUser: {
+        user_name: infoUser[0].user_name,
+        avatar: infoUser[0].avatar,
+        displayName: infoUser[0].display_name,
+      },
+    });
+  } else {
+    res.send({ isSuccess: false });
+  }
+  // res.send({user_name: inf})
 };

@@ -11,4 +11,5 @@ router.post("/checkRoleUserInProject" , checkRoleUserInProject)
 router.post("/getInfoUser" , getInfoByUserName)
 router.post("/uploadAvatar", multer({ storage }).single("file"), uploadAvatar);
 
+
 export default router;

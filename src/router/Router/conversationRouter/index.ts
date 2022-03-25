@@ -9,8 +9,10 @@ import {
   likeAndDislikeTextChat,
   replyMessageInConversation,
   getInfoUser,
+  sendImage,
 } from "./conversationModal";
-
+import { storage } from "../../../db/functionForDB/upload";
+import multer from "multer";
 const router = express.Router();
 
 router.post("/createARoomInConversation", createARoomInConversation);
@@ -22,5 +24,5 @@ router.post("/renameChannel", renameChannelChat);
 router.post("/likeAndDislikeText", likeAndDislikeTextChat);
 router.post("/replyMessage", replyMessageInConversation);
 router.post("/getInfoUser", getInfoUser);
-
+router.post("/sendImage", multer({ storage }).single("file"), sendImage);
 export default router;

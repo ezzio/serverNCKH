@@ -6,7 +6,8 @@ import listMemberInRoom from "../../../db/functionForDB/getInFoUserInArray";
 import User_Schema from "../../../db/schema/User_Schema";
 import converTextChat from "../../../db/functionForDB/convertTextChat";
 import { ObjectId } from "mongoose";
-import { info } from "console";
+
+let PORT = process.env.PORTURL || "http://localhost:4000";
 export const createARoomInConversation = async (
   req: Request,
   res: Response
@@ -287,5 +288,29 @@ export const getInfoUser = async (req: Request, res: Response) => {
   } else {
     res.send({ isSuccess: false });
   }
-  // res.send({user_name: inf})
+};
+
+export const sendImage = async (req: Request, res: Response) => {
+  let message = req.body;
+  
+  let { room_id, mess, idUser, type } = message;
+  if (req.file === undefined) return res.send({ isSuccess: false });
+
+  const imgUrl = `${PORT}/photo/${req.file.filename}`;
+  var io = req.app.get("socketio");
+
+  await roomConversation_Schema.updateOne(
+    { _id: room_id },
+    {
+      $push: {
+        textChat: {
+          line_text: imgUrl,
+          idUser: idUser,
+          type: "image",
+        },
+      },
+    }
+  );
+
+  io.broadcast.to(room_id).emit("newMessagesConversation", message);
 };

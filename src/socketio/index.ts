@@ -8,7 +8,7 @@ export default (server: express.Express, app: any) => {
       origin: "*",
     },
   });
- 
+
   app.set("userInRoom", userInRoom);
   io.on("connection", (socket: any) => {
     app.set("socketio", socket);
@@ -25,7 +25,7 @@ export default (server: express.Express, app: any) => {
       socket.join(data.room_id);
     });
     socket.on("chat-connectToRoomConversation", (data: any) => {
-      // console.log("connect vao room");
+
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
         userInRoom.push({
@@ -36,6 +36,26 @@ export default (server: express.Express, app: any) => {
         userInRoom[index].socketId = socket.id;
       }
       socket.join(data.room_id);
+    });
+
+    socket.on("sendMessageConversation", async (message: any) => {
+      let { mess, idUser, type, room_id } = message;
+      console.log(message);
+      socket.broadcast
+        .to(message.room_id)
+        .emit("newMessagesConversation", message);
+      await roominconversation_schema.updateOne(
+        { _id: room_id },
+        {
+          $push: {
+            textChat: {
+              line_text: mess,
+              idUser: idUser,
+              type: type,
+            },
+          },
+        }
+      );
     });
 
     socket.on("sendMessage", async (message: any) => {
@@ -54,27 +74,6 @@ export default (server: express.Express, app: any) => {
         }
       );
       socket.broadcast.to(message.room_id).emit("newMessages", message);
-    });
-    socket.on("sendMessageConversation", async (message: any) => {
-      let { mess, idUser, type, room_id } = message;
-
-      let findRoomConversation = await roominconversation_schema
-        .find({ _id: room_id })
-        .lean()
-        .exec();
-      await roominconversation_schema.updateOne(
-        { _id: room_id },
-        {
-          $push: {
-            textChat: {
-              line_text: mess,
-              idUser: idUser,
-              type: type,
-            },
-          },
-        }
-      );
-      socket.broadcast.to(room_id).emit("newMessagesConversation", message);
     });
 
     socket.on("disconnect", async () => {

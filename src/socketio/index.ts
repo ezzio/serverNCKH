@@ -37,11 +37,11 @@ export default (server: express.Express, app: any) => {
         userInRoom[index].socketId = socket.id;
       }
       socket.join(data.room_id);
-      app.set("socketio", socket);
+    
     });
 
     socket.on("chat-sendImageInConversation", (data: any) => {
-      io.to(data.idRoom).emit("chatnewImageInConversation");
+      socket.to(data.idRoom).emit("chatnewImageInConversation");
     });
 
     socket.on("sendMessageConversation", async (message: any) => {

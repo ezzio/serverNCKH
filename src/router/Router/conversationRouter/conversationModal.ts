@@ -292,13 +292,9 @@ export const getInfoUser = async (req: Request, res: Response) => {
 
 export const sendImage = async (req: Request, res: Response) => {
   let message = req.body;
-  
   let { room_id, mess, idUser, type } = message;
   if (req.file === undefined) return res.send({ isSuccess: false });
-
   const imgUrl = `${PORT}/photo/${req.file.filename}`;
-  var io = req.app.get("socketio");
-
   await roomConversation_Schema.updateOne(
     { _id: room_id },
     {
@@ -311,6 +307,5 @@ export const sendImage = async (req: Request, res: Response) => {
       },
     }
   );
-
-  io.broadcast.to(room_id).emit("newMessagesConversation", message);
+  res.send({ isSuccess: true });
 };

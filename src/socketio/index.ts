@@ -11,7 +11,7 @@ export default (server: express.Express, app: any) => {
 
   app.set("userInRoom", userInRoom);
   io.on("connection", (socket: any) => {
-    app.set("socketio", socket);
+    app.set("users", userInRoom);
     socket.on("chat-connectToRoom", (data: any) => {
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
@@ -23,9 +23,10 @@ export default (server: express.Express, app: any) => {
         userInRoom[index].socketId = socket.id;
       }
       socket.join(data.room_id);
+      app.set("socketio", socket);
     });
     socket.on("chat-connectToRoomConversation", (data: any) => {
-
+      console.log(data);
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
         userInRoom.push({
@@ -36,11 +37,16 @@ export default (server: express.Express, app: any) => {
         userInRoom[index].socketId = socket.id;
       }
       socket.join(data.room_id);
+      app.set("socketio", socket);
+    });
+
+    socket.on("chat-sendImageInConversation", (data: any) => {
+      io.to(data.idRoom).emit("chatnewImageInConversation");
     });
 
     socket.on("sendMessageConversation", async (message: any) => {
       let { mess, idUser, type, room_id } = message;
-      console.log(message);
+
       socket.broadcast
         .to(message.room_id)
         .emit("newMessagesConversation", message);
@@ -51,7 +57,7 @@ export default (server: express.Express, app: any) => {
             textChat: {
               line_text: mess,
               idUser: idUser,
-              type: type,
+              type: "text",
             },
           },
         }

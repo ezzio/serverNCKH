@@ -7,7 +7,7 @@ export const storage = new GridFsStorage({
   options: { useNewUrlParser: true, useUnifiedTopology: true },
   file: (req, file) => {
     const match = ["image/png", "image/jpeg"];
-    console.log(file);
+ 
     if (match.indexOf(file.mimetype) === -1) {
       const filename = `${Date.now()}-${uuid()}-${file.originalname}`;
       return filename;

@@ -309,3 +309,26 @@ export const sendImage = async (req: Request, res: Response) => {
   );
   res.send({ isSuccess: true });
 };
+
+export const takeTheLastImageInTheConversation = async (
+  req: Request,
+  res: Response
+) => {
+  let { idRoom } = req.body;
+  let infoRoom = await roomConversation_Schema
+    .find({ _id: idRoom })
+    .lean()
+    .exec();
+  let MessageInConversation = infoRoom[0].textChat;
+  let infoUser = await User_Schema.find({
+    _id: MessageInConversation[MessageInConversation.length - 1].idUser,
+  });
+  res.send({
+    isSuccess: true,
+    avatarURL: infoUser[0].avatar,
+    user_name: infoUser[0].user_name,
+    displayName: infoUser[0].display_name,
+    mess: MessageInConversation[MessageInConversation.length - 1].line_text,
+    type: "image",
+  });
+};

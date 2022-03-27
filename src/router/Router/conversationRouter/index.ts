@@ -9,6 +9,7 @@ import {
   likeAndDislikeTextChat,
   replyMessageInConversation,
   getInfoUser,
+  takeTheLastImageInTheConversation,
   sendImage,
 } from "./conversationModal";
 import { storage } from "../../../db/functionForDB/upload";
@@ -24,5 +25,6 @@ router.post("/renameChannel", renameChannelChat);
 router.post("/likeAndDislikeText", likeAndDislikeTextChat);
 router.post("/replyMessage", replyMessageInConversation);
 router.post("/getInfoUser", getInfoUser);
+router.post("/getlastMessage", takeTheLastImageInTheConversation);
 router.post("/sendImage", multer({ storage }).single("file"), sendImage);
 export default router;

@@ -25,6 +25,17 @@ export default (server: express.Express, app: any) => {
       socket.join(data.room_id);
       app.set("socketio", socket);
     });
+    socket.on("chat-likeMessageInConversation", (data: any) => {
+      socket
+        .to(data.infoLiked.idRoom)
+        .emit("chat-someOneLikeInConversation", data);
+    });
+    socket.on("chat-dislikeMessageInConversation", (data: any) => {
+      socket
+        .to(data.infoDisLiked.idRoom)
+        .emit("chat-someOneDislikeInConversation", data);
+    });
+
     socket.on("chat-connectToRoomConversation", (data: any) => {
       console.log(data);
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
@@ -37,7 +48,6 @@ export default (server: express.Express, app: any) => {
         userInRoom[index].socketId = socket.id;
       }
       socket.join(data.room_id);
-    
     });
 
     socket.on("chat-sendImageInConversation", (data: any) => {

@@ -37,7 +37,7 @@ export default (server: express.Express, app: any) => {
     });
 
     socket.on("chat-connectToRoomConversation", (data: any) => {
-      console.log(data);
+     
       let index = userInRoom.findIndex((user) => user.idUser === data.id);
       if (index == -1) {
         userInRoom.push({

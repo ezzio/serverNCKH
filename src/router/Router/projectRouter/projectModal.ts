@@ -62,7 +62,7 @@ export async function createAProject(req: Request, res: Response) {
   let project = new project_Schema({
     name: request.name,
     owners: request.owner,
-    members: [{ idMember: request.owner, tag: "Leader" }],
+    members: [{ idMember: request.owner, tag: "Project Manager" }],
   });
   await User_Schema.updateOne(
     { _id: request.owner },
@@ -319,7 +319,7 @@ export const transferOwnerShipProject = async (req: Request, res: Response) => {
                 },
               ],
             },
-            { $set: { "members.$.tag": "Leader" } }
+            { $set: { "members.$.tag": "Project Manager" } }
           );
           res.send({ isSuccess: true });
         } else {

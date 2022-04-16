@@ -85,22 +85,24 @@ export async function getUserInfo(req: Request, res: Response) {
   });
   for (const eachTask of findAllTaskuserJoin) {
     // search id project -->
+
     const idProject = await Job_Schema.find({ _id: eachTask.idJobOwner })
       .lean()
       .exec();
+    console.log(idProject);
     // <-- search id project
-
-    allTask.push({
-      idProject: idProject[0].projectowner,
-      idTask: eachTask._id,
-      idBoard: eachTask.idJobOwner,
-      title: eachTask.title,
-      progress: eachTask.progress,
-      is_complete: eachTask.is_complete,
-      priority: eachTask.priority,
-      start_time: eachTask.start_time,
-      end_time: eachTask.end_time,
-    });
+    if (idProject.length > 0)
+      allTask.push({
+        idProject: idProject[0].projectowner,
+        idTask: eachTask._id,
+        idBoard: eachTask.idJobOwner,
+        title: eachTask.title,
+        progress: eachTask.progress,
+        is_complete: eachTask.is_complete,
+        priority: eachTask.priority,
+        start_time: eachTask.start_time,
+        end_time: eachTask.end_time,
+      });
   }
   await result.push({
     allProject,
